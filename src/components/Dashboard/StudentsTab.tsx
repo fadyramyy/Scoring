@@ -1,7 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import { Class, Student } from '../../types';
 import { dataService } from '../../lib/dataService';
-import { UserPlus, Edit2, Check, X } from 'lucide-react';
+import { ImportExcelModal } from './ImportExcelModal';
+import { UserPlus, Edit2, Check, X, FileSpreadsheet } from 'lucide-react';
 
 interface StudentsTabProps {
   currentClass: Class;
@@ -21,6 +22,7 @@ export const StudentsTab: React.FC<StudentsTabProps> = ({ currentClass }) => {
   const [newStudentName, setNewStudentName] = useState('');
   const [editingId, setEditingId] = useState<string | null>(null);
   const [editName, setEditName] = useState('');
+  const [showImportModal, setShowImportModal] = useState(false);
   const [loading, setLoading] = useState(false);
 
   const refreshStudents = async () => {
@@ -83,6 +85,13 @@ export const StudentsTab: React.FC<StudentsTabProps> = ({ currentClass }) => {
     }
   };
 
+  const handleBatchImport = async (names: string[]) => {
+    for (const name of names) {
+      await dataService.createStudent(currentClass.id, name);
+    }
+    await refreshStudents();
+  };
+
   const handleStartEdit = (student: Student) => {
     setEditingId(student.id);
     setEditName(student.name);
@@ -103,27 +112,34 @@ export const StudentsTab: React.FC<StudentsTabProps> = ({ currentClass }) => {
 
   return (
     <div className="space-y-6">
-      {/* ADD STUDENT FORM */}
-      <div className="bg-white border-2 border-indigo-100 rounded-3xl p-6 card-shadow">
-        <h3 className="text-lg font-extrabold text-indigo-950 mb-4 flex items-center gap-2">
-          <UserPlus className="w-5 h-5 text-indigo-600" /> Add New Student to Roster
-        </h3>
-        <form onSubmit={handleAddStudent} className="flex gap-3">
+      {/* ADD STUDENT & EXCEL IMPORT ACTION BAR */}
+      <div className="bg-white border-2 border-indigo-100 rounded-3xl p-6 card-shadow flex flex-col md:flex-row items-stretch md:items-center justify-between gap-4">
+        <form onSubmit={handleAddStudent} className="flex-1 flex gap-3">
           <input
             type="text"
             required
             value={newStudentName}
             onChange={(e) => setNewStudentName(e.target.value)}
-            placeholder="Student Name (e.g. Jason)"
+            placeholder="Single Student Name (e.g. Jason)"
             className="flex-1 px-4 py-3 bg-[#F6F2FF] border-2 border-indigo-100 rounded-2xl text-indigo-950 placeholder-indigo-300 font-semibold focus:outline-none focus:border-indigo-500 text-sm"
           />
           <button
             type="submit"
-            className="px-6 py-3 bg-indigo-600 hover:bg-indigo-700 text-white font-extrabold rounded-2xl text-sm transition-all tactile-btn cursor-pointer shadow-md shadow-indigo-500/20"
+            className="px-5 py-3 bg-indigo-600 hover:bg-indigo-700 text-white font-extrabold rounded-2xl text-sm transition-all tactile-btn cursor-pointer shadow-md shadow-indigo-500/20 whitespace-nowrap"
           >
             + Add Student
           </button>
         </form>
+
+        <div className="h-8 w-[2px] bg-indigo-100 hidden md:block" />
+
+        <button
+          type="button"
+          onClick={() => setShowImportModal(true)}
+          className="px-5 py-3 bg-amber-400 hover:bg-amber-300 text-indigo-950 font-extrabold rounded-2xl text-sm transition-all tactile-btn cursor-pointer shadow-md shadow-amber-400/30 flex items-center justify-center gap-2 whitespace-nowrap"
+        >
+          <FileSpreadsheet className="w-4 h-4" /> Import Excel List (Arabic ➔ English)
+        </button>
       </div>
 
       {/* ROSTER TABLE */}
@@ -236,6 +252,13 @@ export const StudentsTab: React.FC<StudentsTabProps> = ({ currentClass }) => {
           </table>
         </div>
       </div>
+
+      {showImportModal && (
+        <ImportExcelModal
+          onImportStudents={handleBatchImport}
+          onClose={() => setShowImportModal(false)}
+        />
+      )}
     </div>
   );
 };
