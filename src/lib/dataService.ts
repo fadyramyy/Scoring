@@ -107,7 +107,23 @@ export const dataService = {
 
     const userId = authData.user.id;
 
-    // 2. Ensure profile exists or insert
+    // 2. Call atomic register_teacher RPC
+    const { data: rpcProfile, error: rpcError } = await supabase.rpc('register_teacher', {
+      p_user_id: userId,
+      p_email: email.trim(),
+      p_name: name.trim(),
+      p_class_name: className.trim(),
+    });
+
+    if (!rpcError && rpcProfile) {
+      return rpcProfile as Profile;
+    }
+
+    if (rpcError) {
+      console.warn('RPC register_teacher warning:', rpcError.message);
+    }
+
+    // Fallback: direct table operations
     const { data: profile } = await supabase
       .from('profiles')
       .select('*')
@@ -128,7 +144,7 @@ export const dataService = {
       }
     }
 
-    // 3. Create or find Class
+    // Create or find Class
     const { data: existingClass } = await supabase
       .from('classes')
       .select('*')
@@ -152,7 +168,7 @@ export const dataService = {
       targetClassId = newClass.id;
     }
 
-    // 4. Link teacher membership
+    // Link teacher membership
     const { error: memError } = await supabase.from('teacher_class_memberships').upsert({
       teacher_id: userId,
       class_id: targetClassId,
