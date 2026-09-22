@@ -219,7 +219,32 @@ export const dataService = {
 
     if (!supabase) throw new Error('Supabase client not initialized');
 
-    // 1. Check if class exists
+    // Fetch teacher profile
+    const { data: profile } = await supabase
+      .from('profiles')
+      .select('email, name')
+      .eq('id', teacherId)
+      .maybeSingle();
+
+    // Call atomic SECURITY DEFINER register_teacher RPC
+    const { error: rpcErr } = await supabase.rpc('register_teacher', {
+      p_user_id: teacherId,
+      p_email: profile?.email || '',
+      p_name: profile?.name || 'Teacher',
+      p_class_name: trimmedName,
+    });
+
+    if (!rpcErr) {
+      const classes = await this.getTeacherClasses(teacherId);
+      const match = classes.find((c) => c.name.toLowerCase() === trimmedName.toLowerCase());
+      if (match) return match;
+    }
+
+    if (rpcErr) {
+      console.warn('register_teacher RPC error:', rpcErr.message);
+    }
+
+    // Direct table fallback
     const { data: existingClass } = await supabase
       .from('classes')
       .select('*')
@@ -242,7 +267,6 @@ export const dataService = {
       targetClassId = newClass.id;
     }
 
-    // 2. Link teacher membership
     const { error: memErr } = await supabase.from('teacher_class_memberships').upsert({
       teacher_id: teacherId,
       class_id: targetClassId,
