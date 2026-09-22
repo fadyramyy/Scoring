@@ -1,18 +1,22 @@
 import React, { useState } from 'react';
 import { Profile } from '../../types';
-import { isDemoMode } from '../../lib/supabase';
-import { mockDb } from '../../lib/mockDatabase';
 import { dataService } from '../../lib/dataService';
-import { CosmicRocketEmblem, TeacherAstronautAvatar } from '../Brand/CosmicEmblem';
-import { Lock, Mail, Sparkles } from 'lucide-react';
+import { CosmicRocketEmblem } from '../Brand/CosmicEmblem';
+import { Lock, Mail, User, School } from 'lucide-react';
 
 interface LoginModalProps {
   onLogin: (teacher: Profile) => void;
 }
 
 export const LoginModal: React.FC<LoginModalProps> = ({ onLogin }) => {
+  const [isRegisterMode, setIsRegisterMode] = useState(false);
+
+  // Form Fields
+  const [name, setName] = useState('');
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
+  const [className, setClassName] = useState('');
+
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
@@ -22,20 +26,20 @@ export const LoginModal: React.FC<LoginModalProps> = ({ onLogin }) => {
     setLoading(true);
 
     try {
-      const teacher = await dataService.signIn(email, password);
+      let teacher: Profile;
+      if (isRegisterMode) {
+        if (!name.trim() || !className.trim()) {
+          throw new Error('Please enter your full name and class name.');
+        }
+        teacher = await dataService.signUp(email, password, name, className);
+      } else {
+        teacher = await dataService.signIn(email, password);
+      }
       onLogin(teacher);
     } catch (err: any) {
-      setError(err.message || 'Invalid teacher email address or password.');
+      setError(err.message || 'Authentication failed. Please check your details.');
     } finally {
       setLoading(false);
-    }
-  };
-
-  const handleDemoSelect = async (teacherId: string) => {
-    const demoProfiles = mockDb.getProfiles();
-    const teacher = demoProfiles.find((p) => p.id === teacherId);
-    if (teacher) {
-      onLogin(teacher);
     }
   };
 
@@ -58,6 +62,38 @@ export const LoginModal: React.FC<LoginModalProps> = ({ onLogin }) => {
           </p>
         </div>
 
+        {/* Tab Switcher: Sign In vs Register */}
+        <div className="flex bg-white p-1 rounded-2xl border border-indigo-100 mb-6 shadow-sm">
+          <button
+            type="button"
+            onClick={() => {
+              setIsRegisterMode(false);
+              setError(null);
+            }}
+            className={`flex-1 py-2.5 rounded-xl font-extrabold text-xs uppercase tracking-wider transition-all cursor-pointer ${
+              !isRegisterMode
+                ? 'bg-indigo-600 text-white shadow-sm'
+                : 'text-indigo-400 hover:text-indigo-900'
+            }`}
+          >
+            Sign In
+          </button>
+          <button
+            type="button"
+            onClick={() => {
+              setIsRegisterMode(true);
+              setError(null);
+            }}
+            className={`flex-1 py-2.5 rounded-xl font-extrabold text-xs uppercase tracking-wider transition-all cursor-pointer ${
+              isRegisterMode
+                ? 'bg-indigo-600 text-white shadow-sm'
+                : 'text-indigo-400 hover:text-indigo-900'
+            }`}
+          >
+            Register Teacher
+          </button>
+        </div>
+
         {error && (
           <div className="mb-4 p-3.5 rounded-2xl bg-rose-50 border border-rose-200 text-rose-700 text-sm text-center font-semibold">
             {error}
@@ -65,6 +101,25 @@ export const LoginModal: React.FC<LoginModalProps> = ({ onLogin }) => {
         )}
 
         <form onSubmit={handleSubmit} className="space-y-4">
+          {isRegisterMode && (
+            <div>
+              <label className="block text-xs font-bold text-indigo-900 uppercase tracking-wider mb-1.5">
+                Full Name
+              </label>
+              <div className="relative">
+                <User className="absolute left-3.5 top-3.5 w-5 h-5 text-indigo-400" />
+                <input
+                  type="text"
+                  required
+                  value={name}
+                  onChange={(e) => setName(e.target.value)}
+                  placeholder="e.g. Mr. Andrew"
+                  className="w-full pl-11 pr-4 py-3 bg-white border-2 border-indigo-100 rounded-2xl text-indigo-950 placeholder-indigo-300 font-semibold focus:outline-none focus:border-indigo-500 transition-colors shadow-sm"
+                />
+              </div>
+            </div>
+          )}
+
           <div>
             <label className="block text-xs font-bold text-indigo-900 uppercase tracking-wider mb-1.5">
               Teacher Email
@@ -99,48 +154,39 @@ export const LoginModal: React.FC<LoginModalProps> = ({ onLogin }) => {
             </div>
           </div>
 
+          {isRegisterMode && (
+            <div>
+              <label className="block text-xs font-bold text-indigo-900 uppercase tracking-wider mb-1.5">
+                Class Name
+              </label>
+              <div className="relative">
+                <School className="absolute left-3.5 top-3.5 w-5 h-5 text-indigo-400" />
+                <input
+                  type="text"
+                  required
+                  value={className}
+                  onChange={(e) => setClassName(e.target.value)}
+                  placeholder="e.g. Samuel Class"
+                  className="w-full pl-11 pr-4 py-3 bg-white border-2 border-indigo-100 rounded-2xl text-indigo-950 placeholder-indigo-300 font-semibold focus:outline-none focus:border-indigo-500 transition-colors shadow-sm"
+                />
+              </div>
+            </div>
+          )}
+
           <button
             type="submit"
             disabled={loading}
             className="w-full py-3.5 bg-indigo-600 hover:bg-indigo-700 disabled:opacity-50 text-white font-extrabold text-base rounded-2xl shadow-lg shadow-indigo-500/25 transition-all tactile-btn cursor-pointer mt-2"
           >
-            {loading ? 'Launching Session...' : 'Sign In to Teacher Portal'}
+            {loading
+              ? isRegisterMode
+                ? 'Creating Account...'
+                : 'Signing In...'
+              : isRegisterMode
+              ? 'Create Teacher Account'
+              : 'Sign In to Teacher Portal'}
           </button>
         </form>
-
-        {/* Demo Accounts strictly for Demo mode */}
-        {isDemoMode && (
-          <div className="mt-6 pt-5 border-t border-indigo-100/80">
-            <div className="flex items-center gap-1.5 justify-center text-xs font-bold text-indigo-600 mb-3 uppercase tracking-wider">
-              <Sparkles className="w-3.5 h-3.5 text-amber-500" /> Demo Teacher Accounts
-            </div>
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
-              <button
-                type="button"
-                onClick={() => handleDemoSelect('teacher-1')}
-                className="flex items-center gap-2.5 p-2.5 bg-white hover:bg-indigo-50 border border-indigo-100 rounded-2xl text-left transition-colors cursor-pointer group shadow-sm"
-              >
-                <TeacherAstronautAvatar className="w-8 h-8" />
-                <div>
-                  <div className="text-xs font-bold text-indigo-950">Mr. Andrew</div>
-                  <div className="text-[10px] font-semibold text-indigo-500">Samuel Class</div>
-                </div>
-              </button>
-
-              <button
-                type="button"
-                onClick={() => handleDemoSelect('teacher-3')}
-                className="flex items-center gap-2.5 p-2.5 bg-white hover:bg-indigo-50 border border-indigo-100 rounded-2xl text-left transition-colors cursor-pointer group shadow-sm"
-              >
-                <TeacherAstronautAvatar className="w-8 h-8" />
-                <div>
-                  <div className="text-xs font-bold text-indigo-950">Mr. Caleb</div>
-                  <div className="text-[10px] font-semibold text-indigo-500">Elijah Class</div>
-                </div>
-              </button>
-            </div>
-          </div>
-        )}
       </div>
     </div>
   );

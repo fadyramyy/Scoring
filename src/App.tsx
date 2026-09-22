@@ -8,13 +8,11 @@ import { LoginModal } from './components/Auth/LoginModal';
 import { StartSessionModal } from './components/Classroom/StartSessionModal';
 import { LiveClassroom } from './components/Classroom/LiveClassroom';
 import { TeacherDashboard } from './components/Dashboard/TeacherDashboard';
-import { AcceptanceTestSimulator } from './components/Simulator/AcceptanceTestSimulator';
 import {
   LogOut,
   ChevronDown,
   Monitor,
   LayoutDashboard,
-  ShieldCheck,
 } from 'lucide-react';
 
 export const App: React.FC = () => {
@@ -26,7 +24,6 @@ export const App: React.FC = () => {
   const [viewMode, setViewMode] = useState<'dashboard' | 'live'>('dashboard');
 
   const [showStartModal, setShowStartModal] = useState<boolean>(false);
-  const [showSimulator, setShowSimulator] = useState<boolean>(false);
 
   // Restore authenticated session on mount (Supabase Auth)
   useEffect(() => {
@@ -165,16 +162,6 @@ export const App: React.FC = () => {
 
         {/* TOP RIGHT VIEW SWITCHER & USER INFO */}
         <div className="flex items-center gap-2 sm:gap-4">
-          {isDemoMode && (
-            <button
-              onClick={() => setShowSimulator(true)}
-              className="px-3 py-1.5 bg-amber-100 hover:bg-amber-200 border border-amber-300 text-amber-900 font-extrabold rounded-2xl text-xs flex items-center gap-1.5 transition-colors cursor-pointer"
-              title="Run automated prompt acceptance test verification"
-            >
-              <ShieldCheck className="w-4 h-4 text-amber-600" /> Acceptance Tester
-            </button>
-          )}
-
           {activeSession && (
             <div className="flex items-center bg-[#F6F2FF] p-1 rounded-2xl border-2 border-indigo-100">
               <button
@@ -247,13 +234,6 @@ export const App: React.FC = () => {
           activeSession={activeSession}
           onStartSession={handleStartSession}
           onClose={() => setShowStartModal(false)}
-        />
-      )}
-
-      {showSimulator && (
-        <AcceptanceTestSimulator
-          onClose={() => setShowSimulator(false)}
-          onRefreshParentState={refreshState}
         />
       )}
     </div>

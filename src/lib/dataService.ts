@@ -32,14 +32,13 @@ export const dataService = {
     }
 
     // Fetch user profile
-    const { data: profile, error: profileError } = await supabase
+    const { data: profile } = await supabase
       .from('profiles')
       .select('*')
       .eq('id', authData.user.id)
-      .single();
+      .maybeSingle();
 
-    if (profileError || !profile) {
-      // Fallback: construct profile from auth user metadata
+    if (!profile) {
       return {
         id: authData.user.id,
         email: authData.user.email || email,
@@ -49,6 +48,98 @@ export const dataService = {
     }
 
     return profile as Profile;
+  },
+
+  async signUp(email: string, password: string, name: string, className: string): Promise<Profile> {
+    if (isDemoMode) {
+      const newProfile: Profile = {
+        id: 'teacher-' + Math.random().toString(36).substring(2, 9),
+        email: email.trim(),
+        name: name.trim(),
+        created_at: new Date().toISOString(),
+      };
+      const newClass: Class = {
+        id: 'class-' + Math.random().toString(36).substring(2, 9),
+        name: className.trim(),
+        active: true,
+        created_at: new Date().toISOString(),
+      };
+      mockDb.getProfiles().push(newProfile);
+      mockDb['store'].classes.push(newClass);
+      mockDb['store'].memberships.push({
+        id: 'm-' + Math.random().toString(36).substring(2, 9),
+        teacher_id: newProfile.id,
+        class_id: newClass.id,
+      });
+      mockDb['saveStore'](mockDb['store']);
+      return newProfile;
+    }
+
+    if (!supabase) throw new Error('Supabase client not initialized');
+
+    // 1. Sign up with Supabase Auth
+    const { data: authData, error: authError } = await supabase.auth.signUp({
+      email: email.trim(),
+      password,
+      options: {
+        data: { name: name.trim() },
+      },
+    });
+
+    if (authError || !authData.user) {
+      throw new Error(authError?.message || 'Registration failed');
+    }
+
+    const userId = authData.user.id;
+
+    // 2. Ensure profile exists or insert
+    const { data: profile } = await supabase
+      .from('profiles')
+      .select('*')
+      .eq('id', userId)
+      .maybeSingle();
+
+    const userProfile: Profile = profile || {
+      id: userId,
+      email: email.trim(),
+      name: name.trim(),
+      created_at: new Date().toISOString(),
+    };
+
+    if (!profile) {
+      await supabase.from('profiles').upsert(userProfile);
+    }
+
+    // 3. Create or find Class
+    const { data: existingClass } = await supabase
+      .from('classes')
+      .select('*')
+      .ilike('name', className.trim())
+      .maybeSingle();
+
+    let targetClassId: string;
+    if (existingClass) {
+      targetClassId = existingClass.id;
+    } else {
+      const { data: newClass, error: classError } = await supabase
+        .from('classes')
+        .insert({ name: className.trim(), active: true })
+        .select()
+        .single();
+
+      if (classError || !newClass) {
+        throw new Error(classError?.message || 'Failed to create class');
+      }
+      targetClassId = newClass.id;
+    }
+
+    // 4. Link teacher membership
+    await supabase.from('teacher_class_memberships').upsert({
+      teacher_id: userId,
+      class_id: targetClassId,
+    });
+
+    return userProfile;
   },
 
   async signOut(): Promise<void> {
@@ -69,7 +160,7 @@ export const dataService = {
       .from('profiles')
       .select('*')
       .eq('id', user.id)
-      .single();
+      .maybeSingle();
 
     if (profile) return profile as Profile;
 
@@ -246,7 +337,6 @@ export const dataService = {
     }
     if (!supabase) return [];
 
-    // Join attendance with sessions for this class
     const { data } = await supabase
       .from('attendance')
       .select('*, class_sessions!inner(class_id)')
@@ -343,7 +433,6 @@ export const dataService = {
     }
     if (!supabase) throw new Error('Supabase client not initialized');
 
-    // Fetch latest score event for student in this session
     const { data: events } = await supabase
       .from('score_events')
       .select('*')
