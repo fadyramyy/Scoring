@@ -3,7 +3,7 @@ import { Class } from '../../types';
 import { dataService } from '../../lib/dataService';
 import { mockDb } from '../../lib/mockDatabase';
 import { isDemoMode } from '../../lib/supabase';
-import { Users, Calendar, Percent, Award } from 'lucide-react';
+import { Users, Calendar, Percent, Award, Star } from 'lucide-react';
 
 interface OverviewTabProps {
   currentClass: Class;
@@ -66,69 +66,70 @@ export const OverviewTab: React.FC<OverviewTabProps> = ({ currentClass }) => {
 
   return (
     <div className="space-y-6">
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5">
         {/* Total Active Students */}
-        <div className="bg-slate-900 border border-slate-800 rounded-3xl p-6 shadow-lg">
+        <div className="bg-white border-2 border-indigo-100 rounded-3xl p-6 card-shadow">
           <div className="flex items-center justify-between mb-2">
-            <span className="text-xs font-bold text-slate-400 uppercase tracking-wider">
+            <span className="text-xs font-extrabold text-indigo-400 uppercase tracking-wider">
               Active Students
             </span>
-            <div className="p-2.5 rounded-2xl bg-amber-500/10 text-amber-400">
+            <div className="p-2.5 rounded-2xl bg-indigo-50 text-indigo-600">
               <Users className="w-5 h-5" />
             </div>
           </div>
-          <div className="text-3xl font-black text-white font-display">
+          <div className="text-4xl font-extrabold text-indigo-950 font-display">
             {stats.totalStudentsCount}
           </div>
-          <p className="text-xs text-slate-500 mt-1">Enrolled in {currentClass.name}</p>
+          <p className="text-xs font-semibold text-indigo-500 mt-1">Enrolled in {currentClass.name}</p>
         </div>
 
         {/* Classes Held */}
-        <div className="bg-slate-900 border border-slate-800 rounded-3xl p-6 shadow-lg">
+        <div className="bg-white border-2 border-indigo-100 rounded-3xl p-6 card-shadow">
           <div className="flex items-center justify-between mb-2">
-            <span className="text-xs font-bold text-slate-400 uppercase tracking-wider">
+            <span className="text-xs font-extrabold text-indigo-400 uppercase tracking-wider">
               Classes Held
             </span>
-            <div className="p-2.5 rounded-2xl bg-indigo-500/10 text-indigo-400">
+            <div className="p-2.5 rounded-2xl bg-indigo-50 text-indigo-600">
               <Calendar className="w-5 h-5" />
             </div>
           </div>
-          <div className="text-3xl font-black text-white font-display">
+          <div className="text-4xl font-extrabold text-indigo-950 font-display">
             {stats.classesHeldCount}
           </div>
-          <p className="text-xs text-slate-500 mt-1">Completed weekly sessions</p>
+          <p className="text-xs font-semibold text-indigo-500 mt-1">Completed weekly sessions</p>
         </div>
 
         {/* Average Attendance % */}
-        <div className="bg-slate-900 border border-slate-800 rounded-3xl p-6 shadow-lg">
+        <div className="bg-white border-2 border-indigo-100 rounded-3xl p-6 card-shadow">
           <div className="flex items-center justify-between mb-2">
-            <span className="text-xs font-bold text-slate-400 uppercase tracking-wider">
+            <span className="text-xs font-extrabold text-indigo-400 uppercase tracking-wider">
               Avg Attendance Rate
             </span>
-            <div className="p-2.5 rounded-2xl bg-emerald-500/10 text-emerald-400">
+            <div className="p-2.5 rounded-2xl bg-emerald-50 text-emerald-600">
               <Percent className="w-5 h-5" />
             </div>
           </div>
-          <div className="text-3xl font-black text-emerald-400 font-display">
+          <div className="text-4xl font-extrabold text-emerald-600 font-display">
             {stats.pooledAvgAttendancePct.toFixed(1)}%
           </div>
-          <p className="text-xs text-slate-500 mt-1">Pooled active student average</p>
+          <p className="text-xs font-semibold text-indigo-500 mt-1">Pooled active student average</p>
         </div>
 
         {/* Total Points This Year */}
-        <div className="bg-slate-900 border border-slate-800 rounded-3xl p-6 shadow-lg">
+        <div className="bg-white border-2 border-indigo-100 rounded-3xl p-6 card-shadow">
           <div className="flex items-center justify-between mb-2">
-            <span className="text-xs font-bold text-slate-400 uppercase tracking-wider">
+            <span className="text-xs font-extrabold text-indigo-400 uppercase tracking-wider">
               Total Points This Year
             </span>
-            <div className="p-2.5 rounded-2xl bg-amber-500/10 text-amber-400">
-              <Award className="w-5 h-5" />
+            <div className="p-2.5 rounded-2xl bg-amber-50 text-amber-500">
+              <Star className="w-5 h-5 fill-amber-400" />
             </div>
           </div>
-          <div className="text-3xl font-black text-amber-400 font-display">
-            {stats.totalHistoricalPoints}
+          <div className="text-4xl font-extrabold text-amber-500 font-display flex items-center gap-1">
+            <span>{stats.totalHistoricalPoints}</span>
+            <span className="text-2xl text-amber-400">⭐</span>
           </div>
-          <p className="text-xs text-slate-500 mt-1">Accumulated across all sessions</p>
+          <p className="text-xs font-semibold text-indigo-500 mt-1">Accumulated across all sessions</p>
         </div>
       </div>
     </div>

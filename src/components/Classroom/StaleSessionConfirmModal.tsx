@@ -28,26 +28,26 @@ export const StaleSessionConfirmModal: React.FC<StaleSessionConfirmModalProps> =
   );
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center bg-slate-950/80 backdrop-blur-md p-4">
-      <div className="w-full max-w-md bg-slate-900 border border-amber-500/40 rounded-3xl p-6 shadow-2xl relative">
-        <div className="flex items-center justify-center w-14 h-14 rounded-2xl bg-amber-500/20 text-amber-400 mb-4 mx-auto">
+    <div className="fixed inset-0 z-50 flex items-center justify-center bg-indigo-950/40 backdrop-blur-md p-4 selection:bg-amber-400">
+      <div className="w-full max-w-md bg-[#F6F2FF] border-2 border-indigo-100 rounded-3xl p-6 card-shadow relative">
+        <div className="flex items-center justify-center w-14 h-14 rounded-2xl bg-amber-100 text-amber-600 mb-4 mx-auto">
           <AlertTriangle className="w-8 h-8" />
         </div>
 
-        <h2 className="text-xl font-bold text-center text-white mb-2">
+        <h2 className="text-xl font-extrabold text-center text-indigo-950 mb-2">
           Active Class Session in Progress
         </h2>
 
-        <p className="text-slate-300 text-sm text-center mb-4 leading-relaxed">
-          <strong className="text-amber-400">{className}</strong> has an open session started on:
+        <p className="text-indigo-700 text-sm text-center mb-4 leading-relaxed font-semibold">
+          <strong className="text-indigo-950">{className}</strong> has an open session started on:
         </p>
 
-        <div className="bg-slate-800/80 border border-slate-700/80 rounded-xl p-3 mb-4 flex items-center gap-2 justify-center text-xs font-semibold text-slate-200">
-          <Clock className="w-4 h-4 text-amber-400" />
+        <div className="bg-white border-2 border-indigo-100 rounded-2xl p-3 mb-4 flex items-center gap-2 justify-center text-xs font-bold text-indigo-900 shadow-sm">
+          <Clock className="w-4 h-4 text-amber-500" />
           {sessionDateFormatted}
         </div>
 
-        <div className="p-3 bg-amber-500/10 border border-amber-500/30 rounded-xl text-amber-200 text-xs mb-6">
+        <div className="p-3.5 bg-amber-50 border border-amber-200 rounded-2xl text-amber-800 text-xs mb-6 font-semibold">
           ⚠️ Starting a new class session will <strong>auto-complete</strong> the current session. Any student not yet marked present will be finalized as <strong>ABSENT</strong>.
         </div>
 
@@ -55,14 +55,14 @@ export const StaleSessionConfirmModal: React.FC<StaleSessionConfirmModalProps> =
           <button
             type="button"
             onClick={onCancel}
-            className="flex-1 py-2.5 bg-slate-800 hover:bg-slate-700 text-slate-300 font-semibold rounded-xl text-sm transition-colors cursor-pointer"
+            className="flex-1 py-3 bg-slate-200 hover:bg-slate-300 text-slate-700 font-bold rounded-2xl text-sm transition-colors cursor-pointer"
           >
             Cancel
           </button>
           <button
             type="button"
             onClick={onConfirm}
-            className="flex-1 py-2.5 bg-gradient-to-r from-amber-500 to-amber-600 hover:from-amber-400 hover:to-amber-500 text-slate-950 font-bold rounded-xl text-sm transition-colors shadow-lg shadow-amber-500/20 cursor-pointer"
+            className="flex-1 py-3 bg-indigo-600 hover:bg-indigo-700 text-white font-extrabold rounded-2xl text-sm transition-all shadow-md shadow-indigo-500/20 cursor-pointer"
           >
             Finalize & Start New
           </button>

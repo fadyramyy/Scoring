@@ -4,6 +4,7 @@ import { OverviewTab } from './OverviewTab';
 import { StudentsTab } from './StudentsTab';
 import { AttendanceTab } from './AttendanceTab';
 import { ScoreHistoryTab } from './ScoreHistoryTab';
+import { TeacherAstronautAvatar } from '../Brand/CosmicEmblem';
 import { LayoutDashboard, Users, CalendarCheck, Award, Play } from 'lucide-react';
 
 interface TeacherDashboardProps {
@@ -27,44 +28,47 @@ export const TeacherDashboard: React.FC<TeacherDashboardProps> = ({
 
   return (
     <div className="space-y-6">
-      {/* ACTION BANNER */}
-      <div className="bg-gradient-to-r from-amber-500/20 via-amber-500/10 to-transparent border border-amber-500/30 rounded-3xl p-6 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
-        <div>
-          <h2 className="text-xl sm:text-2xl font-extrabold text-white font-display">
-            {currentClass.name} Dashboard
-          </h2>
-          <p className="text-xs sm:text-sm text-amber-300 mt-1">
-            Logged in as <strong className="text-white">{teacher.name}</strong> ({teacher.email})
-          </p>
+      {/* ACTION BANNER WITH TEACHER ASTRONAUT AVATAR */}
+      <div className="bg-gradient-to-r from-indigo-600 via-indigo-700 to-indigo-800 rounded-3xl p-6 sm:p-8 text-white shadow-xl shadow-indigo-500/15 flex flex-col sm:flex-row sm:items-center justify-between gap-6 relative overflow-hidden">
+        <div className="flex items-center gap-4 relative z-10">
+          <TeacherAstronautAvatar className="w-16 h-16 sm:w-20 sm:h-20 shrink-0" />
+          <div>
+            <h2 className="text-2xl sm:text-3xl font-extrabold tracking-tight font-display">
+              {currentClass.name} Dashboard
+            </h2>
+            <p className="text-xs sm:text-sm font-medium text-indigo-200 mt-1">
+              Teacher: <strong className="text-white">{teacher.name}</strong> ({teacher.email})
+            </p>
+          </div>
         </div>
 
         {hasActiveSession ? (
           <button
             type="button"
             onClick={onOpenLiveClassroom}
-            className="px-6 py-3.5 bg-gradient-to-r from-emerald-500 to-emerald-600 hover:from-emerald-400 hover:to-emerald-500 text-slate-950 font-black rounded-2xl shadow-lg shadow-emerald-500/20 flex items-center justify-center gap-2 text-sm transition-all cursor-pointer active:scale-95 animate-pulse"
+            className="px-6 py-4 bg-amber-400 hover:bg-amber-300 text-indigo-950 font-extrabold rounded-2xl shadow-lg shadow-amber-400/30 flex items-center justify-center gap-2.5 text-base transition-all tactile-btn cursor-pointer animate-pulse shrink-0 relative z-10"
           >
-            <Play className="w-5 h-5 fill-slate-950" /> RESUME LIVE CLASSROOM
+            <Play className="w-5 h-5 fill-indigo-950" /> RESUME LIVE CLASSROOM
           </button>
         ) : (
           <button
             type="button"
             onClick={onOpenStartSessionModal}
-            className="px-6 py-3.5 bg-gradient-to-r from-amber-500 to-amber-600 hover:from-amber-400 hover:to-amber-500 text-slate-950 font-black rounded-2xl shadow-lg shadow-amber-500/20 flex items-center justify-center gap-2 text-sm transition-all cursor-pointer active:scale-95"
+            className="px-6 py-4 bg-amber-400 hover:bg-amber-300 text-indigo-950 font-extrabold rounded-2xl shadow-lg shadow-amber-400/30 flex items-center justify-center gap-2.5 text-base transition-all tactile-btn cursor-pointer shrink-0 relative z-10"
           >
-            <Play className="w-5 h-5 fill-slate-950" /> START NEW CLASS SESSION
+            <Play className="w-5 h-5 fill-indigo-950" /> START NEW CLASS SESSION
           </button>
         )}
       </div>
 
-      {/* DASHBOARD TABS */}
-      <div className="flex border-b border-slate-800 gap-2 overflow-x-auto pb-1">
+      {/* DASHBOARD NAVIGATION TABS */}
+      <div className="flex border-b-2 border-indigo-100 gap-2 overflow-x-auto pb-1">
         <button
           onClick={() => setActiveTab('overview')}
-          className={`flex items-center gap-2 px-5 py-3 font-bold text-sm rounded-t-2xl transition-colors cursor-pointer whitespace-nowrap ${
+          className={`flex items-center gap-2 px-5 py-3 font-extrabold text-sm rounded-t-2xl transition-colors cursor-pointer whitespace-nowrap ${
             activeTab === 'overview'
-              ? 'bg-slate-900 text-amber-400 border-t-2 border-amber-500'
-              : 'text-slate-400 hover:text-slate-200 hover:bg-slate-900/40'
+              ? 'bg-white text-indigo-600 border-t-4 border-indigo-600 shadow-sm'
+              : 'text-indigo-900/60 hover:text-indigo-950 hover:bg-white/60'
           }`}
         >
           <LayoutDashboard className="w-4 h-4" /> Overview
@@ -72,10 +76,10 @@ export const TeacherDashboard: React.FC<TeacherDashboardProps> = ({
 
         <button
           onClick={() => setActiveTab('students')}
-          className={`flex items-center gap-2 px-5 py-3 font-bold text-sm rounded-t-2xl transition-colors cursor-pointer whitespace-nowrap ${
+          className={`flex items-center gap-2 px-5 py-3 font-extrabold text-sm rounded-t-2xl transition-colors cursor-pointer whitespace-nowrap ${
             activeTab === 'students'
-              ? 'bg-slate-900 text-amber-400 border-t-2 border-amber-500'
-              : 'text-slate-400 hover:text-slate-200 hover:bg-slate-900/40'
+              ? 'bg-white text-indigo-600 border-t-4 border-indigo-600 shadow-sm'
+              : 'text-indigo-900/60 hover:text-indigo-950 hover:bg-white/60'
           }`}
         >
           <Users className="w-4 h-4" /> Students
@@ -83,10 +87,10 @@ export const TeacherDashboard: React.FC<TeacherDashboardProps> = ({
 
         <button
           onClick={() => setActiveTab('attendance')}
-          className={`flex items-center gap-2 px-5 py-3 font-bold text-sm rounded-t-2xl transition-colors cursor-pointer whitespace-nowrap ${
+          className={`flex items-center gap-2 px-5 py-3 font-extrabold text-sm rounded-t-2xl transition-colors cursor-pointer whitespace-nowrap ${
             activeTab === 'attendance'
-              ? 'bg-slate-900 text-amber-400 border-t-2 border-amber-500'
-              : 'text-slate-400 hover:text-slate-200 hover:bg-slate-900/40'
+              ? 'bg-white text-indigo-600 border-t-4 border-indigo-600 shadow-sm'
+              : 'text-indigo-900/60 hover:text-indigo-950 hover:bg-white/60'
           }`}
         >
           <CalendarCheck className="w-4 h-4" /> Attendance
@@ -94,10 +98,10 @@ export const TeacherDashboard: React.FC<TeacherDashboardProps> = ({
 
         <button
           onClick={() => setActiveTab('scores')}
-          className={`flex items-center gap-2 px-5 py-3 font-bold text-sm rounded-t-2xl transition-colors cursor-pointer whitespace-nowrap ${
+          className={`flex items-center gap-2 px-5 py-3 font-extrabold text-sm rounded-t-2xl transition-colors cursor-pointer whitespace-nowrap ${
             activeTab === 'scores'
-              ? 'bg-slate-900 text-amber-400 border-t-2 border-amber-500'
-              : 'text-slate-400 hover:text-slate-200 hover:bg-slate-900/40'
+              ? 'bg-white text-indigo-600 border-t-4 border-indigo-600 shadow-sm'
+              : 'text-indigo-900/60 hover:text-indigo-950 hover:bg-white/60'
           }`}
         >
           <Award className="w-4 h-4" /> Score History

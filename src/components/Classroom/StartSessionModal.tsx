@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { Student, ClassSession } from '../../types';
 import { CheckSquare, Square, Play, Users, AlertCircle } from 'lucide-react';
 import { StaleSessionConfirmModal } from './StaleSessionConfirmModal';
+import { CosmicRocketEmblem } from '../Brand/CosmicEmblem';
 
 interface StartSessionModalProps {
   className: string;
@@ -56,37 +57,40 @@ export const StartSessionModal: React.FC<StartSessionModalProps> = ({
 
   return (
     <>
-      <div className="fixed inset-0 z-40 flex items-center justify-center bg-slate-950/80 backdrop-blur-md p-4">
-        <div className="w-full max-w-lg bg-slate-900 border border-slate-800 rounded-3xl p-6 sm:p-8 shadow-2xl relative">
-          <div className="flex items-center justify-between mb-6 pb-4 border-b border-slate-800">
-            <div>
-              <div className="text-xs font-semibold uppercase tracking-wider text-amber-400 mb-1">
-                {className}
+      <div className="fixed inset-0 z-40 flex items-center justify-center bg-indigo-950/40 backdrop-blur-md p-4 selection:bg-amber-400">
+        <div className="w-full max-w-lg bg-[#F6F2FF] border-2 border-indigo-100 rounded-3xl p-6 sm:p-8 card-shadow relative">
+          <div className="flex items-center justify-between mb-6 pb-4 border-b-2 border-indigo-100">
+            <div className="flex items-center gap-3">
+              <CosmicRocketEmblem className="w-10 h-10" />
+              <div>
+                <div className="text-xs font-extrabold uppercase tracking-wider text-indigo-600">
+                  {className}
+                </div>
+                <h2 className="text-2xl font-extrabold text-indigo-950 tracking-tight flex items-center gap-2">
+                  WHO IS HERE TODAY?
+                </h2>
               </div>
-              <h2 className="text-2xl font-bold text-white tracking-tight flex items-center gap-2">
-                <Users className="w-6 h-6 text-amber-500" /> WHO IS HERE TODAY?
-              </h2>
             </div>
             <button
               onClick={onClose}
-              className="text-slate-400 hover:text-white p-2 rounded-xl hover:bg-slate-800 transition-colors"
+              className="text-indigo-400 hover:text-indigo-950 p-2 rounded-2xl hover:bg-white font-bold transition-colors"
             >
               ✕
             </button>
           </div>
 
           {students.length === 0 ? (
-            <div className="text-center py-8 text-slate-400 text-sm">
+            <div className="text-center py-8 text-indigo-500 font-semibold text-sm">
               No active students found in this class. Please add students from the Teacher Dashboard first.
             </div>
           ) : (
             <>
-              <div className="flex items-center justify-between mb-3 px-1 text-xs text-slate-400 font-semibold">
+              <div className="flex items-center justify-between mb-3 px-1 text-xs text-indigo-500 font-extrabold">
                 <span>Select children currently present:</span>
                 <button
                   type="button"
                   onClick={toggleSelectAll}
-                  className="text-amber-400 hover:underline cursor-pointer"
+                  className="text-indigo-600 hover:underline cursor-pointer"
                 >
                   {selectedIds.size === students.length ? 'Deselect All' : 'Select All'}
                 </button>
@@ -99,20 +103,20 @@ export const StartSessionModal: React.FC<StartSessionModalProps> = ({
                     <div
                       key={student.id}
                       onClick={() => toggleStudent(student.id)}
-                      className={`flex items-center justify-between p-3.5 rounded-2xl border transition-all cursor-pointer select-none ${
+                      className={`flex items-center justify-between p-4 rounded-2xl border-2 transition-all cursor-pointer select-none ${
                         isChecked
-                          ? 'bg-amber-500/10 border-amber-500/40 text-amber-200 shadow-sm'
-                          : 'bg-slate-800/50 border-slate-700/60 text-slate-400 hover:bg-slate-800'
+                          ? 'bg-white border-indigo-500 text-indigo-950 shadow-sm'
+                          : 'bg-[#F6F2FF] border-indigo-100/80 text-indigo-400 hover:bg-white/60'
                       }`}
                     >
-                      <span className="font-bold text-base text-slate-100">
+                      <span className="font-extrabold text-base">
                         {student.name}
                       </span>
-                      <div className="text-amber-400">
+                      <div className="text-indigo-600">
                         {isChecked ? (
-                          <CheckSquare className="w-6 h-6 fill-amber-500/20" />
+                          <CheckSquare className="w-6 h-6 fill-indigo-100 text-indigo-600" />
                         ) : (
-                          <Square className="w-6 h-6 text-slate-600" />
+                          <Square className="w-6 h-6 text-indigo-300" />
                         )}
                       </div>
                     </div>
@@ -120,8 +124,8 @@ export const StartSessionModal: React.FC<StartSessionModalProps> = ({
                 })}
               </div>
 
-              <div className="p-3 bg-indigo-500/10 border border-indigo-500/30 rounded-xl text-indigo-300 text-xs mb-6 flex items-start gap-2">
-                <AlertCircle className="w-4 h-4 shrink-0 mt-0.5 text-indigo-400" />
+              <div className="p-3.5 bg-indigo-50 border border-indigo-200 rounded-2xl text-indigo-900 text-xs mb-6 flex items-start gap-2.5 font-semibold">
+                <AlertCircle className="w-4 h-4 shrink-0 mt-0.5 text-indigo-600" />
                 <span>
                   Every student will start this new class session at <strong>0 points</strong>. Children arriving late can be added anytime after class starts.
                 </span>
@@ -130,9 +134,9 @@ export const StartSessionModal: React.FC<StartSessionModalProps> = ({
               <button
                 type="button"
                 onClick={handleStartClick}
-                className="w-full py-3.5 bg-gradient-to-r from-emerald-500 to-emerald-600 hover:from-emerald-400 hover:to-emerald-500 text-slate-950 font-extrabold rounded-2xl shadow-lg shadow-emerald-500/20 transition-all flex items-center justify-center gap-2 text-base cursor-pointer active:scale-[0.99]"
+                className="w-full py-4 bg-indigo-600 hover:bg-indigo-700 text-white font-extrabold rounded-2xl shadow-lg shadow-indigo-500/20 transition-all flex items-center justify-center gap-2 text-base cursor-pointer tactile-btn"
               >
-                <Play className="w-5 h-5 fill-slate-950" /> START CLASS SESSION
+                <Play className="w-5 h-5 fill-white" /> START CLASS SESSION
               </button>
             </>
           )}

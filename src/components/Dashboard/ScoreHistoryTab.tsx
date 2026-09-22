@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { Class, Student, ClassSession, Attendance, ScoreEvent } from '../../types';
 import { dataService } from '../../lib/dataService';
-import { History } from 'lucide-react';
+import { Star, History } from 'lucide-react';
 
 interface ScoreHistoryTabProps {
   currentClass: Class;
@@ -39,40 +39,40 @@ export const ScoreHistoryTab: React.FC<ScoreHistoryTabProps> = ({ currentClass }
 
   return (
     <div className="space-y-6">
-      <div className="bg-slate-900 border border-slate-800 rounded-3xl p-6 shadow-lg">
-        <h3 className="text-lg font-bold text-white mb-4 flex items-center gap-2">
-          <History className="w-5 h-5 text-amber-500" /> Historical Session Scores
+      <div className="bg-white border-2 border-indigo-100 rounded-3xl p-6 card-shadow">
+        <h3 className="text-lg font-extrabold text-indigo-950 mb-4 flex items-center gap-2">
+          <History className="w-5 h-5 text-indigo-600" /> Historical Session Scores
         </h3>
 
         {completedSessions.length === 0 ? (
-          <div className="text-center py-8 text-slate-400 text-sm">
+          <div className="text-center py-8 text-indigo-400 font-semibold text-sm">
             No completed class sessions recorded yet. Historical weekly scores will populate here.
           </div>
         ) : (
           <div className="overflow-x-auto">
-            <table className="w-full text-left text-sm text-slate-300 border-collapse">
+            <table className="w-full text-left text-sm text-indigo-950 border-collapse">
               <thead>
-                <tr className="bg-slate-800/80 text-xs font-bold text-slate-400 uppercase border-b border-slate-700">
-                  <th className="py-3 px-4 sticky left-0 bg-slate-800 border-r border-slate-700 min-w-[140px]">
+                <tr className="bg-[#F6F2FF] text-xs font-extrabold text-indigo-600 uppercase border-b-2 border-indigo-100">
+                  <th className="py-3.5 px-4 sticky left-0 bg-[#F6F2FF] border-r-2 border-indigo-100 min-w-[140px]">
                     Student Name
                   </th>
                   {completedSessions.map((sess) => (
-                    <th key={sess.id} className="py-3 px-4 text-center min-w-[100px]">
+                    <th key={sess.id} className="py-3.5 px-4 text-center min-w-[100px]">
                       {new Date(sess.started_at).toLocaleDateString(undefined, {
                         month: 'short',
                         day: 'numeric',
                       })}
                     </th>
                   ))}
-                  <th className="py-3 px-4 text-center bg-slate-800/50 min-w-[110px]">
+                  <th className="py-3.5 px-4 text-center bg-amber-50/50 min-w-[110px]">
                     Total Points
                   </th>
-                  <th className="py-3 px-4 text-center bg-slate-800/50 min-w-[110px]">
+                  <th className="py-3.5 px-4 text-center bg-indigo-50/50 min-w-[110px]">
                     Avg / Class
                   </th>
                 </tr>
               </thead>
-              <tbody className="divide-y divide-slate-800">
+              <tbody className="divide-y divide-indigo-50">
                 {students.map((student) => {
                   const studentEvents = scoreEvents.filter((se) => se.student_id === student.id);
                   const totalPoints = studentEvents.reduce((sum, se) => sum + se.points, 0);
@@ -87,8 +87,8 @@ export const ScoreHistoryTab: React.FC<ScoreHistoryTabProps> = ({ currentClass }
                   const avgPointsPerClass = classesAttended > 0 ? totalPoints / classesAttended : 0;
 
                   return (
-                    <tr key={student.id} className="hover:bg-slate-800/40 transition-colors">
-                      <td className="py-3.5 px-4 font-bold text-white sticky left-0 bg-slate-900 border-r border-slate-800">
+                    <tr key={student.id} className="hover:bg-indigo-50/40 transition-colors">
+                      <td className="py-3.5 px-4 font-extrabold text-indigo-950 sticky left-0 bg-white border-r-2 border-indigo-50">
                         {student.name}
                       </td>
 
@@ -103,21 +103,21 @@ export const ScoreHistoryTab: React.FC<ScoreHistoryTabProps> = ({ currentClass }
                         return (
                           <td key={sess.id} className="py-3.5 px-4 text-center">
                             {wasPresent ? (
-                              <span className="font-extrabold text-amber-400">
-                                {sessionScore}
+                              <span className="font-extrabold text-amber-500">
+                                {sessionScore} ⭐
                               </span>
                             ) : (
-                              <span className="text-slate-600 text-xs italic">Absent</span>
+                              <span className="text-slate-400 text-xs italic font-semibold">Absent</span>
                             )}
                           </td>
                         );
                       })}
 
-                      <td className="py-3.5 px-4 text-center font-black text-amber-400 bg-slate-800/20">
-                        {totalPoints}
+                      <td className="py-3.5 px-4 text-center font-extrabold text-amber-500 bg-amber-50/30">
+                        {totalPoints} ⭐
                       </td>
 
-                      <td className="py-3.5 px-4 text-center font-bold text-slate-200 bg-slate-800/20">
+                      <td className="py-3.5 px-4 text-center font-bold text-indigo-900 bg-indigo-50/30">
                         {avgPointsPerClass.toFixed(1)}
                       </td>
                     </tr>

@@ -11,22 +11,16 @@ export const AttendanceTab: React.FC<AttendanceTabProps> = ({ currentClass }) =>
   const [students, setStudents] = useState<Student[]>([]);
   const [sessions, setSessions] = useState<ClassSession[]>([]);
   const [attendanceRecords, setAttendanceRecords] = useState<Attendance[]>([]);
-  const [loading, setLoading] = useState(false);
 
   const loadData = async () => {
-    setLoading(true);
-    try {
-      const stus = await dataService.getStudents(currentClass.id, true);
-      const sess = await dataService.getSessions(currentClass.id);
-      const completedSess = sess.filter((s) => s.status === 'completed');
-      const atts = await dataService.getAttendanceForClass(currentClass.id);
+    const stus = await dataService.getStudents(currentClass.id, true);
+    const sess = await dataService.getSessions(currentClass.id);
+    const completedSess = sess.filter((s) => s.status === 'completed');
+    const atts = await dataService.getAttendanceForClass(currentClass.id);
 
-      setStudents(stus);
-      setSessions(completedSess);
-      setAttendanceRecords(atts);
-    } finally {
-      setLoading(false);
-    }
+    setStudents(stus);
+    setSessions(completedSess);
+    setAttendanceRecords(atts);
   };
 
   useEffect(() => {
@@ -36,37 +30,37 @@ export const AttendanceTab: React.FC<AttendanceTabProps> = ({ currentClass }) =>
   return (
     <div className="space-y-6">
       {/* ATTENDANCE MATRIX GRID */}
-      <div className="bg-slate-900 border border-slate-800 rounded-3xl p-6 shadow-lg overflow-hidden">
-        <h3 className="text-lg font-bold text-white mb-4 flex items-center gap-2">
-          <Calendar className="w-5 h-5 text-amber-500" /> Attendance Matrix Grid
+      <div className="bg-white border-2 border-indigo-100 rounded-3xl p-6 card-shadow overflow-hidden">
+        <h3 className="text-lg font-extrabold text-indigo-950 mb-4 flex items-center gap-2">
+          <Calendar className="w-5 h-5 text-indigo-600" /> Attendance Matrix Grid
         </h3>
 
         {sessions.length === 0 ? (
-          <div className="text-center py-8 text-slate-400 text-sm">
+          <div className="text-center py-8 text-indigo-400 font-semibold text-sm">
             No completed class sessions recorded yet. Complete a weekly session to view attendance history.
           </div>
         ) : (
           <div className="overflow-x-auto">
-            <table className="w-full text-left text-sm text-slate-300 border-collapse">
+            <table className="w-full text-left text-sm text-indigo-950 border-collapse">
               <thead>
-                <tr className="bg-slate-800/80 text-xs font-bold text-slate-400 uppercase border-b border-slate-700">
-                  <th className="py-3 px-4 sticky left-0 bg-slate-800 border-r border-slate-700 min-w-[140px]">
+                <tr className="bg-[#F6F2FF] text-xs font-extrabold text-indigo-600 uppercase border-b-2 border-indigo-100">
+                  <th className="py-3.5 px-4 sticky left-0 bg-[#F6F2FF] border-r-2 border-indigo-100 min-w-[140px]">
                     Student Name
                   </th>
                   {sessions.map((sess) => (
-                    <th key={sess.id} className="py-3 px-4 text-center min-w-[100px]">
+                    <th key={sess.id} className="py-3.5 px-4 text-center min-w-[100px]">
                       {new Date(sess.started_at).toLocaleDateString(undefined, {
                         month: 'short',
                         day: 'numeric',
                       })}
                     </th>
                   ))}
-                  <th className="py-3 px-4 text-center bg-slate-800/50 min-w-[120px]">
+                  <th className="py-3.5 px-4 text-center bg-indigo-50/50 min-w-[120px]">
                     Attendance %
                   </th>
                 </tr>
               </thead>
-              <tbody className="divide-y divide-slate-800">
+              <tbody className="divide-y divide-indigo-50">
                 {students.map((student) => {
                   const studentAtts = attendanceRecords.filter((a) => a.student_id === student.id);
                   const classesAttended = studentAtts.filter(
@@ -83,11 +77,11 @@ export const AttendanceTab: React.FC<AttendanceTabProps> = ({ currentClass }) =>
                     totalSessionsHeld > 0 ? (classesAttended / totalSessionsHeld) * 100 : 0;
 
                   return (
-                    <tr key={student.id} className="hover:bg-slate-800/40 transition-colors">
-                      <td className="py-3.5 px-4 font-bold text-white sticky left-0 bg-slate-900 border-r border-slate-800">
+                    <tr key={student.id} className="hover:bg-indigo-50/40 transition-colors">
+                      <td className="py-3.5 px-4 font-extrabold text-indigo-950 sticky left-0 bg-white border-r-2 border-indigo-50">
                         {student.name}
                         {!student.active && (
-                          <span className="ml-2 text-[10px] text-slate-500 font-normal">(Inactive)</span>
+                          <span className="ml-2 text-[10px] text-slate-400 font-bold">(Inactive)</span>
                         )}
                       </td>
 
@@ -102,21 +96,21 @@ export const AttendanceTab: React.FC<AttendanceTabProps> = ({ currentClass }) =>
                         return (
                           <td key={sess.id} className="py-3.5 px-4 text-center">
                             {isPresent ? (
-                              <span className="inline-flex items-center justify-center w-7 h-7 rounded-full bg-emerald-500/20 text-emerald-400 font-bold">
+                              <span className="inline-flex items-center justify-center w-7 h-7 rounded-full bg-emerald-100 text-emerald-700 font-extrabold text-xs">
                                 <Check className="w-4 h-4" />
                               </span>
                             ) : isAbsent ? (
-                              <span className="inline-flex items-center justify-center w-7 h-7 rounded-full bg-rose-500/20 text-rose-400 font-bold">
+                              <span className="inline-flex items-center justify-center w-7 h-7 rounded-full bg-rose-100 text-rose-600 font-extrabold text-xs">
                                 <X className="w-4 h-4" />
                               </span>
                             ) : (
-                              <span className="text-slate-600 font-bold">-</span>
+                              <span className="text-slate-300 font-extrabold">-</span>
                             )}
                           </td>
                         );
                       })}
 
-                      <td className="py-3.5 px-4 text-center font-bold text-emerald-400 bg-slate-800/20">
+                      <td className="py-3.5 px-4 text-center font-extrabold text-emerald-600 bg-emerald-50/30">
                         {`${attendancePct.toFixed(1)}%`}
                       </td>
                     </tr>

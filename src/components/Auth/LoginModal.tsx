@@ -3,7 +3,8 @@ import { Profile } from '../../types';
 import { isDemoMode } from '../../lib/supabase';
 import { mockDb } from '../../lib/mockDatabase';
 import { dataService } from '../../lib/dataService';
-import { Lock, Mail, Sparkles, School } from 'lucide-react';
+import { CosmicRocketEmblem, TeacherAstronautAvatar } from '../Brand/CosmicEmblem';
+import { Lock, Mail, Sparkles } from 'lucide-react';
 
 interface LoginModalProps {
   onLogin: (teacher: Profile) => void;
@@ -39,61 +40,61 @@ export const LoginModal: React.FC<LoginModalProps> = ({ onLogin }) => {
   };
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center bg-slate-950/80 backdrop-blur-md p-4">
-      <div className="w-full max-w-md bg-slate-900 border border-slate-800 rounded-3xl p-6 sm:p-8 shadow-2xl relative overflow-hidden">
-        {/* Background Decorative Accent */}
-        <div className="absolute -top-12 -right-12 w-36 h-36 bg-amber-500/10 rounded-full blur-2xl pointer-events-none" />
-        <div className="absolute -bottom-12 -left-12 w-36 h-36 bg-indigo-500/10 rounded-full blur-2xl pointer-events-none" />
+    <div className="fixed inset-0 z-50 flex items-center justify-center bg-indigo-950/40 backdrop-blur-md p-4 selection:bg-amber-400">
+      <div className="w-full max-w-md bg-[#F6F2FF] border-2 border-indigo-100 rounded-3xl p-6 sm:p-8 card-shadow relative overflow-hidden">
+        {/* Background Accents */}
+        <div className="absolute -top-10 -right-10 w-32 h-32 bg-indigo-200/40 rounded-full blur-2xl pointer-events-none" />
+        <div className="absolute -bottom-10 -left-10 w-32 h-32 bg-amber-200/40 rounded-full blur-2xl pointer-events-none" />
 
-        <div className="text-center mb-6">
-          <div className="inline-flex items-center justify-center w-16 h-16 rounded-2xl bg-gradient-to-br from-amber-400 to-amber-600 text-slate-950 font-bold mb-3 shadow-lg shadow-amber-500/20">
-            <School className="w-8 h-8" />
+        <div className="text-center mb-6 relative">
+          <div className="inline-flex items-center justify-center p-2 mb-2 bg-white rounded-3xl shadow-sm border border-indigo-100">
+            <CosmicRocketEmblem className="w-14 h-14" />
           </div>
-          <h1 className="text-2xl font-bold text-white tracking-tight">
-            Sunday School Classroom
+          <h1 className="text-2xl sm:text-3xl font-extrabold text-indigo-950 tracking-tight">
+            Cosmic Adventure
           </h1>
-          <p className="text-sm text-slate-400 mt-1">
-            Sign in to start your weekly scoring & attendance session
+          <p className="text-xs sm:text-sm font-semibold text-indigo-600 uppercase tracking-widest mt-1">
+            Classroom Scoring & Rewards
           </p>
         </div>
 
         {error && (
-          <div className="mb-4 p-3 rounded-xl bg-rose-500/10 border border-rose-500/30 text-rose-300 text-sm text-center">
+          <div className="mb-4 p-3.5 rounded-2xl bg-rose-50 border border-rose-200 text-rose-700 text-sm text-center font-semibold">
             {error}
           </div>
         )}
 
         <form onSubmit={handleSubmit} className="space-y-4">
           <div>
-            <label className="block text-xs font-semibold text-slate-300 uppercase tracking-wider mb-1.5">
+            <label className="block text-xs font-bold text-indigo-900 uppercase tracking-wider mb-1.5">
               Teacher Email
             </label>
             <div className="relative">
-              <Mail className="absolute left-3.5 top-3 w-5 h-5 text-slate-500" />
+              <Mail className="absolute left-3.5 top-3.5 w-5 h-5 text-indigo-400" />
               <input
                 type="email"
                 required
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
-                placeholder="teacher@church.org"
-                className="w-full pl-11 pr-4 py-2.5 bg-slate-800/80 border border-slate-700/80 rounded-xl text-white placeholder-slate-500 focus:outline-none focus:border-amber-500 focus:ring-1 focus:ring-amber-500 transition-colors"
+                placeholder="teacher@school.org"
+                className="w-full pl-11 pr-4 py-3 bg-white border-2 border-indigo-100 rounded-2xl text-indigo-950 placeholder-indigo-300 font-semibold focus:outline-none focus:border-indigo-500 transition-colors shadow-sm"
               />
             </div>
           </div>
 
           <div>
-            <label className="block text-xs font-semibold text-slate-300 uppercase tracking-wider mb-1.5">
+            <label className="block text-xs font-bold text-indigo-900 uppercase tracking-wider mb-1.5">
               Password
             </label>
             <div className="relative">
-              <Lock className="absolute left-3.5 top-3 w-5 h-5 text-slate-500" />
+              <Lock className="absolute left-3.5 top-3.5 w-5 h-5 text-indigo-400" />
               <input
                 type="password"
                 required
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
                 placeholder="••••••••"
-                className="w-full pl-11 pr-4 py-2.5 bg-slate-800/80 border border-slate-700/80 rounded-xl text-white placeholder-slate-500 focus:outline-none focus:border-amber-500 focus:ring-1 focus:ring-amber-500 transition-colors"
+                className="w-full pl-11 pr-4 py-3 bg-white border-2 border-indigo-100 rounded-2xl text-indigo-950 placeholder-indigo-300 font-semibold focus:outline-none focus:border-indigo-500 transition-colors shadow-sm"
               />
             </div>
           </div>
@@ -101,44 +102,40 @@ export const LoginModal: React.FC<LoginModalProps> = ({ onLogin }) => {
           <button
             type="submit"
             disabled={loading}
-            className="w-full py-3 bg-gradient-to-r from-amber-500 to-amber-600 hover:from-amber-400 hover:to-amber-500 disabled:opacity-50 text-slate-950 font-bold rounded-xl shadow-lg shadow-amber-500/20 transition-all active:scale-[0.99] cursor-pointer"
+            className="w-full py-3.5 bg-indigo-600 hover:bg-indigo-700 disabled:opacity-50 text-white font-extrabold text-base rounded-2xl shadow-lg shadow-indigo-500/25 transition-all tactile-btn cursor-pointer mt-2"
           >
-            {loading ? 'Signing In...' : 'Sign In to Teacher Portal'}
+            {loading ? 'Launching Session...' : 'Sign In to Teacher Portal'}
           </button>
         </form>
 
-        {/* Demo Quick-Switch Buttons GATED Strictly to Mock/Demo Mode */}
+        {/* Demo Accounts strictly for Demo mode */}
         {isDemoMode && (
-          <div className="mt-6 pt-6 border-t border-slate-800">
-            <div className="flex items-center gap-1.5 justify-center text-xs font-semibold text-amber-400 mb-3 uppercase tracking-wider">
-              <Sparkles className="w-3.5 h-3.5" /> Demo Accounts (Click to Login)
+          <div className="mt-6 pt-5 border-t border-indigo-100/80">
+            <div className="flex items-center gap-1.5 justify-center text-xs font-bold text-indigo-600 mb-3 uppercase tracking-wider">
+              <Sparkles className="w-3.5 h-3.5 text-amber-500" /> Demo Teacher Accounts
             </div>
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
               <button
                 type="button"
                 onClick={() => handleDemoSelect('teacher-1')}
-                className="flex items-center gap-2 p-2.5 bg-slate-800/60 hover:bg-slate-800 border border-slate-700/60 rounded-xl text-left transition-colors cursor-pointer group"
+                className="flex items-center gap-2.5 p-2.5 bg-white hover:bg-indigo-50 border border-indigo-100 rounded-2xl text-left transition-colors cursor-pointer group shadow-sm"
               >
-                <div className="w-8 h-8 rounded-lg bg-emerald-500/20 text-emerald-400 flex items-center justify-center font-bold text-xs group-hover:bg-emerald-500 group-hover:text-slate-950 transition-colors">
-                  A
-                </div>
+                <TeacherAstronautAvatar className="w-8 h-8" />
                 <div>
-                  <div className="text-xs font-bold text-white">Mr. Andrew</div>
-                  <div className="text-[10px] text-slate-400">Samuel Class</div>
+                  <div className="text-xs font-bold text-indigo-950">Mr. Andrew</div>
+                  <div className="text-[10px] font-semibold text-indigo-500">Samuel Class</div>
                 </div>
               </button>
 
               <button
                 type="button"
                 onClick={() => handleDemoSelect('teacher-3')}
-                className="flex items-center gap-2 p-2.5 bg-slate-800/60 hover:bg-slate-800 border border-slate-700/60 rounded-xl text-left transition-colors cursor-pointer group"
+                className="flex items-center gap-2.5 p-2.5 bg-white hover:bg-indigo-50 border border-indigo-100 rounded-2xl text-left transition-colors cursor-pointer group shadow-sm"
               >
-                <div className="w-8 h-8 rounded-lg bg-indigo-500/20 text-indigo-400 flex items-center justify-center font-bold text-xs group-hover:bg-indigo-500 group-hover:text-slate-950 transition-colors">
-                  C
-                </div>
+                <TeacherAstronautAvatar className="w-8 h-8" />
                 <div>
-                  <div className="text-xs font-bold text-white">Mr. Caleb</div>
-                  <div className="text-[10px] text-slate-400">Elijah Class</div>
+                  <div className="text-xs font-bold text-indigo-950">Mr. Caleb</div>
+                  <div className="text-[10px] font-semibold text-indigo-500">Elijah Class</div>
                 </div>
               </button>
             </div>

@@ -3,6 +3,7 @@ import { Profile, Class, ClassSession, Student } from './types';
 import { mockDb } from './lib/mockDatabase';
 import { isDemoMode, supabase } from './lib/supabase';
 import { dataService } from './lib/dataService';
+import { CosmicRocketEmblem } from './components/Brand/CosmicEmblem';
 import { LoginModal } from './components/Auth/LoginModal';
 import { StartSessionModal } from './components/Classroom/StartSessionModal';
 import { LiveClassroom } from './components/Classroom/LiveClassroom';
@@ -129,16 +130,14 @@ export const App: React.FC = () => {
   }
 
   return (
-    <div className="min-h-screen bg-slate-950 text-slate-100 flex flex-col font-sans">
+    <div className="min-h-screen bg-[#FCF8FF] text-indigo-950 flex flex-col font-sans">
       {/* GLOBAL APPLICATION TOP HEADER BAR */}
-      <header className="bg-slate-900/90 border-b border-slate-800 sticky top-0 z-30 backdrop-blur-md px-4 sm:px-8 py-3 flex items-center justify-between">
+      <header className="bg-white/90 border-b-2 border-indigo-100 sticky top-0 z-30 backdrop-blur-md px-4 sm:px-8 py-3 flex items-center justify-between card-shadow">
         <div className="flex items-center gap-4">
-          <div className="flex items-center gap-2">
-            <div className="w-9 h-9 rounded-xl bg-gradient-to-br from-amber-400 to-amber-600 text-slate-950 flex items-center justify-center font-black shadow-md shadow-amber-500/20 text-lg">
-              ⭐
-            </div>
-            <span className="font-extrabold text-white text-lg font-display hidden sm:inline">
-              Classroom Scoring
+          <div className="flex items-center gap-2.5">
+            <CosmicRocketEmblem className="w-9 h-9" />
+            <span className="font-extrabold text-indigo-950 text-xl font-display hidden sm:inline tracking-tight">
+              Cosmic Adventure
             </span>
           </div>
 
@@ -151,15 +150,15 @@ export const App: React.FC = () => {
                   const match = teacherClasses.find((c) => c.id === e.target.value);
                   if (match) handleClassSelect(match);
                 }}
-                className="bg-slate-800 border border-slate-700 hover:border-amber-500 text-amber-300 font-bold text-xs sm:text-sm rounded-xl px-3 py-2 pr-8 appearance-none focus:outline-none cursor-pointer transition-colors"
+                className="bg-[#F6F2FF] border-2 border-indigo-100 hover:border-indigo-400 text-indigo-900 font-extrabold text-xs sm:text-sm rounded-2xl px-3.5 py-2 pr-8 appearance-none focus:outline-none cursor-pointer transition-colors"
               >
                 {teacherClasses.map((cls) => (
-                  <option key={cls.id} value={cls.id} className="bg-slate-900 text-white">
+                  <option key={cls.id} value={cls.id} className="bg-white text-indigo-950 font-bold">
                     🏫 {cls.name}
                   </option>
                 ))}
               </select>
-              <ChevronDown className="w-4 h-4 text-amber-400 absolute right-2.5 top-2.5 pointer-events-none" />
+              <ChevronDown className="w-4 h-4 text-indigo-500 absolute right-2.5 top-3 pointer-events-none" />
             </div>
           )}
         </div>
@@ -169,21 +168,21 @@ export const App: React.FC = () => {
           {isDemoMode && (
             <button
               onClick={() => setShowSimulator(true)}
-              className="px-3 py-1.5 bg-amber-500/10 hover:bg-amber-500/20 border border-amber-500/30 text-amber-400 font-bold rounded-xl text-xs flex items-center gap-1.5 transition-colors cursor-pointer"
+              className="px-3 py-1.5 bg-amber-100 hover:bg-amber-200 border border-amber-300 text-amber-900 font-extrabold rounded-2xl text-xs flex items-center gap-1.5 transition-colors cursor-pointer"
               title="Run automated prompt acceptance test verification"
             >
-              <ShieldCheck className="w-4 h-4" /> Acceptance Tester
+              <ShieldCheck className="w-4 h-4 text-amber-600" /> Acceptance Tester
             </button>
           )}
 
           {activeSession && (
-            <div className="flex items-center bg-slate-800 p-1 rounded-xl border border-slate-700">
+            <div className="flex items-center bg-[#F6F2FF] p-1 rounded-2xl border-2 border-indigo-100">
               <button
                 onClick={() => setViewMode('dashboard')}
-                className={`px-3 py-1.5 rounded-lg text-xs font-bold flex items-center gap-1.5 transition-colors cursor-pointer ${
+                className={`px-3 py-1.5 rounded-xl text-xs font-extrabold flex items-center gap-1.5 transition-colors cursor-pointer ${
                   viewMode === 'dashboard'
-                    ? 'bg-amber-500 text-slate-950 shadow-sm'
-                    : 'text-slate-400 hover:text-white'
+                    ? 'bg-indigo-600 text-white shadow-sm'
+                    : 'text-indigo-600 hover:text-indigo-950'
                 }`}
               >
                 <LayoutDashboard className="w-3.5 h-3.5" /> Dashboard
@@ -191,10 +190,10 @@ export const App: React.FC = () => {
 
               <button
                 onClick={() => setViewMode('live')}
-                className={`px-3 py-1.5 rounded-lg text-xs font-bold flex items-center gap-1.5 transition-colors cursor-pointer ${
+                className={`px-3 py-1.5 rounded-xl text-xs font-extrabold flex items-center gap-1.5 transition-colors cursor-pointer ${
                   viewMode === 'live'
-                    ? 'bg-amber-500 text-slate-950 shadow-sm'
-                    : 'text-slate-400 hover:text-white'
+                    ? 'bg-indigo-600 text-white shadow-sm'
+                    : 'text-indigo-600 hover:text-indigo-950'
                 }`}
               >
                 <Monitor className="w-3.5 h-3.5" /> Live Screen
@@ -202,11 +201,11 @@ export const App: React.FC = () => {
             </div>
           )}
 
-          <div className="h-6 w-[1px] bg-slate-800 hidden sm:block" />
+          <div className="h-6 w-[2px] bg-indigo-100 hidden sm:block" />
 
           <button
             onClick={handleSignOut}
-            className="p-2 text-slate-400 hover:text-rose-400 rounded-xl hover:bg-slate-800 transition-colors cursor-pointer"
+            className="p-2 text-indigo-400 hover:text-rose-600 rounded-2xl hover:bg-indigo-50 transition-colors cursor-pointer"
             title="Sign Out"
           >
             <LogOut className="w-5 h-5" />
@@ -217,7 +216,7 @@ export const App: React.FC = () => {
       {/* MAIN VIEW SWITCHER */}
       <div className="flex-1">
         {!selectedClass ? (
-          <div className="text-center py-20 text-slate-400">
+          <div className="text-center py-20 text-indigo-400 font-semibold">
             No class assigned to your teacher account.
           </div>
         ) : viewMode === 'live' && activeSession ? (
