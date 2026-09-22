@@ -17,6 +17,9 @@ export const dataService = {
         (p) => p.email.toLowerCase() === email.trim().toLowerCase()
       );
       if (!match) throw new Error('Invalid teacher email address or password.');
+      if (match.password && match.password !== password) {
+        throw new Error('Invalid teacher email address or password.');
+      }
       return match;
     }
 
@@ -56,6 +59,7 @@ export const dataService = {
         id: 'teacher-' + Math.random().toString(36).substring(2, 9),
         email: email.trim(),
         name: name.trim(),
+        password: password,
         created_at: new Date().toISOString(),
       };
       const newClass: Class = {
