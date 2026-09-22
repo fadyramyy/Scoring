@@ -174,6 +174,9 @@ export const RewardWheelModal: React.FC<RewardWheelModalProps> = ({
     }, 4500);
   };
 
+  const [selectedAddColor, setSelectedAddColor] = useState(PRESET_COLORS[0]);
+  const [activeColorPickerId, setActiveColorPickerId] = useState<string | null>(null);
+
   // Add new gift prize
   const handleAddPrize = (e: React.FormEvent) => {
     e.preventDefault();
@@ -182,11 +185,19 @@ export const RewardWheelModal: React.FC<RewardWheelModalProps> = ({
     const newPrize: RewardPrize = {
       id: Math.random().toString(),
       name: newPrizeName.trim(),
-      color: PRESET_COLORS[prizes.length % PRESET_COLORS.length],
+      color: selectedAddColor,
     };
 
+    const nextColorIndex = (prizes.length + 1) % PRESET_COLORS.length;
     savePrizes([...prizes, newPrize]);
     setNewPrizeName('');
+    setSelectedAddColor(PRESET_COLORS[nextColorIndex]);
+  };
+
+  // Change existing prize color
+  const handleUpdatePrizeColor = (prizeId: string, newColor: string) => {
+    savePrizes(prizes.map((p) => (p.id === prizeId ? { ...p, color: newColor } : p)));
+    setActiveColorPickerId(null);
   };
 
   // Remove gift prize
@@ -245,48 +256,96 @@ export const RewardWheelModal: React.FC<RewardWheelModalProps> = ({
               Configure Reward Gifts (Saved for {className})
             </h3>
 
-            {/* Add Prize Form */}
-            <form onSubmit={handleAddPrize} className="flex gap-2">
-              <input
-                type="text"
-                value={newPrizeName}
-                onChange={(e) => setNewPrizeName(e.target.value)}
-                placeholder="e.g. 🍿 Extra Snack"
-                className="flex-1 px-4 py-2.5 bg-white border-2 border-indigo-100 rounded-2xl text-indigo-950 font-bold text-sm focus:outline-none focus:border-indigo-500 shadow-sm"
-              />
-              <button
-                type="submit"
-                className="px-4 py-2.5 bg-indigo-600 hover:bg-indigo-700 text-white font-extrabold text-sm rounded-2xl flex items-center gap-1 transition-all tactile-btn cursor-pointer shadow-md"
-              >
-                <Plus className="w-4 h-4" /> Add
-              </button>
+            {/* Add Prize Form with Color Selector */}
+            <form onSubmit={handleAddPrize} className="space-y-2 bg-white p-3 border border-indigo-100 rounded-2xl shadow-sm">
+              <div className="flex gap-2">
+                <input
+                  type="text"
+                  value={newPrizeName}
+                  onChange={(e) => setNewPrizeName(e.target.value)}
+                  placeholder="e.g. 🍿 Extra Snack"
+                  className="flex-1 px-3.5 py-2 bg-[#F6F2FF] border-2 border-indigo-100 rounded-xl text-indigo-950 font-bold text-sm focus:outline-none focus:border-indigo-500"
+                />
+                <button
+                  type="submit"
+                  className="px-4 py-2 bg-indigo-600 hover:bg-indigo-700 text-white font-extrabold text-sm rounded-xl flex items-center gap-1 transition-all tactile-btn cursor-pointer shadow-md"
+                >
+                  <Plus className="w-4 h-4" /> Add
+                </button>
+              </div>
+
+              {/* Color Swatches Selection for new gift */}
+              <div className="flex items-center gap-1.5 pt-1">
+                <span className="text-[11px] font-bold text-indigo-400 uppercase tracking-wider mr-1">Slice Color:</span>
+                {PRESET_COLORS.map((color) => (
+                  <button
+                    key={color}
+                    type="button"
+                    onClick={() => setSelectedAddColor(color)}
+                    className={`w-5 h-5 rounded-full transition-transform cursor-pointer border ${
+                      selectedAddColor === color ? 'scale-125 border-indigo-900 ring-2 ring-indigo-400' : 'border-transparent hover:scale-110'
+                    }`}
+                    style={{ backgroundColor: color }}
+                  />
+                ))}
+              </div>
             </form>
 
             {/* List of Current Prizes */}
             <div className="max-h-60 overflow-y-auto space-y-2 pr-1">
-              {prizes.map((prize, idx) => (
-                <div
-                  key={prize.id}
-                  className="flex items-center justify-between p-3 bg-white border border-indigo-100 rounded-2xl shadow-sm"
-                >
-                  <div className="flex items-center gap-2">
-                    <span
-                      className="w-4 h-4 rounded-full border border-indigo-200 shrink-0"
-                      style={{ backgroundColor: prize.color }}
-                    />
-                    <span className="font-extrabold text-indigo-950 text-sm">{prize.name}</span>
-                  </div>
+              {prizes.map((prize) => {
+                const isPickerOpen = activeColorPickerId === prize.id;
 
-                  <button
-                    type="button"
-                    onClick={() => handleRemovePrize(prize.id)}
-                    className="p-1.5 text-rose-500 hover:bg-rose-50 rounded-xl transition-colors cursor-pointer"
-                    title="Remove Prize"
+                return (
+                  <div
+                    key={prize.id}
+                    className="flex flex-col p-3 bg-white border border-indigo-100 rounded-2xl shadow-sm gap-2"
                   >
-                    <Trash2 className="w-4 h-4" />
-                  </button>
-                </div>
-              ))}
+                    <div className="flex items-center justify-between">
+                      <div className="flex items-center gap-2.5">
+                        {/* Clickable color badge to open color picker */}
+                        <button
+                          type="button"
+                          onClick={() => setActiveColorPickerId(isPickerOpen ? null : prize.id)}
+                          className="w-6 h-6 rounded-full border-2 border-white shadow-sm flex items-center justify-center cursor-pointer hover:scale-110 transition-transform ring-1 ring-indigo-200"
+                          style={{ backgroundColor: prize.color }}
+                          title="Click to change color"
+                        />
+                        <span className="font-extrabold text-indigo-950 text-sm">{prize.name}</span>
+                      </div>
+
+                      <button
+                        type="button"
+                        onClick={() => handleRemovePrize(prize.id)}
+                        className="p-1.5 text-rose-500 hover:bg-rose-50 rounded-xl transition-colors cursor-pointer"
+                        title="Remove Prize"
+                      >
+                        <Trash2 className="w-4 h-4" />
+                      </button>
+                    </div>
+
+                    {/* Popover Swatches Row when color picker is active */}
+                    {isPickerOpen && (
+                      <div className="flex items-center gap-2 p-2 bg-[#F6F2FF] rounded-xl border border-indigo-100 animate-fadeIn">
+                        <span className="text-[10px] font-bold text-indigo-500 uppercase">Change Color:</span>
+                        <div className="flex items-center gap-1.5 flex-wrap">
+                          {PRESET_COLORS.map((c) => (
+                            <button
+                              key={c}
+                              type="button"
+                              onClick={() => handleUpdatePrizeColor(prize.id, c)}
+                              className={`w-5 h-5 rounded-full border border-white cursor-pointer hover:scale-125 transition-transform ${
+                                prize.color === c ? 'ring-2 ring-indigo-600 scale-110' : ''
+                              }`}
+                              style={{ backgroundColor: c }}
+                            />
+                          ))}
+                        </div>
+                      </div>
+                    )}
+                  </div>
+                );
+              })}
             </div>
 
             <button
