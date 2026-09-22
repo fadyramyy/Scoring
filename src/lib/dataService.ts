@@ -188,6 +188,79 @@ export const dataService = {
     }
   },
 
+  async assignClassToTeacher(teacherId: string, className: string): Promise<Class> {
+    const trimmedName = className.trim();
+    if (isDemoMode) {
+      let cls = mockDb['store'].classes.find(
+        (c) => c.name.toLowerCase() === trimmedName.toLowerCase()
+      );
+      if (!cls) {
+        cls = {
+          id: 'class-' + Math.random().toString(36).substring(2, 9),
+          name: trimmedName,
+          active: true,
+          created_at: new Date().toISOString(),
+        };
+        mockDb['store'].classes.push(cls);
+      }
+      const existingMem = mockDb['store'].memberships.find(
+        (m) => m.teacher_id === teacherId && m.class_id === cls.id
+      );
+      if (!existingMem) {
+        mockDb['store'].memberships.push({
+          id: 'm-' + Math.random().toString(36).substring(2, 9),
+          teacher_id: teacherId,
+          class_id: cls.id,
+        });
+      }
+      mockDb['saveStore'](mockDb['store']);
+      return cls;
+    }
+
+    if (!supabase) throw new Error('Supabase client not initialized');
+
+    // 1. Check if class exists
+    const { data: existingClass } = await supabase
+      .from('classes')
+      .select('*')
+      .ilike('name', trimmedName)
+      .maybeSingle();
+
+    let targetClassId: string;
+    if (existingClass) {
+      targetClassId = existingClass.id;
+    } else {
+      const { data: newClass, error: classErr } = await supabase
+        .from('classes')
+        .insert({ name: trimmedName, active: true })
+        .select()
+        .single();
+
+      if (classErr || !newClass) {
+        throw new Error(classErr?.message || 'Failed to create class');
+      }
+      targetClassId = newClass.id;
+    }
+
+    // 2. Link teacher membership
+    const { error: memErr } = await supabase.from('teacher_class_memberships').upsert({
+      teacher_id: teacherId,
+      class_id: targetClassId,
+    });
+
+    if (memErr) {
+      throw new Error(memErr.message || 'Failed to assign class to teacher');
+    }
+
+    const { data: targetClass } = await supabase
+      .from('classes')
+      .select('*')
+      .eq('id', targetClassId)
+      .single();
+
+    return targetClass as Class;
+  },
+
   async getCurrentSessionProfile(): Promise<Profile | null> {
     if (isDemoMode) return null;
     if (!supabase) return null;

@@ -24,6 +24,8 @@ export const App: React.FC = () => {
   const [viewMode, setViewMode] = useState<'dashboard' | 'live'>('dashboard');
 
   const [showStartModal, setShowStartModal] = useState<boolean>(false);
+  const [joinClassName, setJoinClassName] = useState('');
+  const [assigningClass, setAssigningClass] = useState(false);
 
   // Restore authenticated session on mount (Supabase Auth)
   useEffect(() => {
@@ -203,8 +205,46 @@ export const App: React.FC = () => {
       {/* MAIN VIEW SWITCHER */}
       <div className="flex-1">
         {!selectedClass ? (
-          <div className="text-center py-20 text-indigo-400 font-semibold">
-            No class assigned to your teacher account.
+          <div className="max-w-md mx-auto my-16 p-8 bg-[#F6F2FF] border-2 border-indigo-100 rounded-3xl text-center card-shadow selection:bg-amber-400">
+            <div className="w-14 h-14 bg-white rounded-3xl border border-indigo-100 flex items-center justify-center mx-auto mb-4 text-2xl shadow-sm">
+              🏫
+            </div>
+            <h2 className="text-2xl font-extrabold text-indigo-950 mb-2">No Class Linked Yet</h2>
+            <p className="text-xs sm:text-sm font-semibold text-indigo-600 mb-6 leading-relaxed">
+              Enter your class name below to join your team's class or create a new one.
+            </p>
+            <form
+              onSubmit={async (e) => {
+                e.preventDefault();
+                if (!joinClassName.trim() || !currentTeacher) return;
+                setAssigningClass(true);
+                try {
+                  await dataService.assignClassToTeacher(currentTeacher.id, joinClassName.trim());
+                  await refreshState();
+                } catch (err: any) {
+                  alert(err.message || 'Failed to assign class.');
+                } finally {
+                  setAssigningClass(false);
+                }
+              }}
+              className="space-y-4"
+            >
+              <input
+                type="text"
+                required
+                value={joinClassName}
+                onChange={(e) => setJoinClassName(e.target.value)}
+                placeholder="e.g. Samuel Class"
+                className="w-full px-4 py-3 bg-white border-2 border-indigo-100 rounded-2xl text-indigo-950 font-bold placeholder-indigo-300 focus:outline-none focus:border-indigo-500 transition-colors shadow-sm"
+              />
+              <button
+                type="submit"
+                disabled={assigningClass}
+                className="w-full py-3.5 bg-indigo-600 hover:bg-indigo-700 disabled:opacity-50 text-white font-extrabold text-sm rounded-2xl shadow-lg shadow-indigo-500/25 transition-all tactile-btn cursor-pointer"
+              >
+                {assigningClass ? 'Linking Class...' : 'Join / Create Class'}
+              </button>
+            </form>
           </div>
         ) : viewMode === 'live' && activeSession ? (
           <LiveClassroom
