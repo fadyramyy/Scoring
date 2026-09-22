@@ -100,17 +100,20 @@ export const LoginModal: React.FC<LoginModalProps> = ({ onLogin }) => {
           </div>
         )}
 
-        <form onSubmit={handleSubmit} className="space-y-4">
+        <form method="POST" action="#" onSubmit={handleSubmit} className="space-y-4">
           {isRegisterMode && (
             <div>
-              <label className="block text-xs font-bold text-indigo-900 uppercase tracking-wider mb-1.5">
+              <label htmlFor="teacher-name" className="block text-xs font-bold text-indigo-900 uppercase tracking-wider mb-1.5">
                 Full Name
               </label>
               <div className="relative">
                 <User className="absolute left-3.5 top-3.5 w-5 h-5 text-indigo-400" />
                 <input
+                  id="teacher-name"
+                  name="name"
                   type="text"
                   required
+                  autoComplete="name"
                   value={name}
                   onChange={(e) => setName(e.target.value)}
                   placeholder="e.g. Mr. Andrew"
@@ -121,14 +124,17 @@ export const LoginModal: React.FC<LoginModalProps> = ({ onLogin }) => {
           )}
 
           <div>
-            <label className="block text-xs font-bold text-indigo-900 uppercase tracking-wider mb-1.5">
+            <label htmlFor="teacher-email" className="block text-xs font-bold text-indigo-900 uppercase tracking-wider mb-1.5">
               Teacher Email
             </label>
             <div className="relative">
               <Mail className="absolute left-3.5 top-3.5 w-5 h-5 text-indigo-400" />
               <input
+                id="teacher-email"
+                name="email"
                 type="email"
                 required
+                autoComplete="username"
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
                 placeholder="teacher@school.org"
@@ -138,14 +144,17 @@ export const LoginModal: React.FC<LoginModalProps> = ({ onLogin }) => {
           </div>
 
           <div>
-            <label className="block text-xs font-bold text-indigo-900 uppercase tracking-wider mb-1.5">
+            <label htmlFor="teacher-password" className="block text-xs font-bold text-indigo-900 uppercase tracking-wider mb-1.5">
               Password
             </label>
             <div className="relative">
               <Lock className="absolute left-3.5 top-3.5 w-5 h-5 text-indigo-400" />
               <input
+                id="teacher-password"
+                name="password"
                 type="password"
                 required
+                autoComplete={isRegisterMode ? 'new-password' : 'current-password'}
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
                 placeholder="••••••••"
@@ -156,14 +165,17 @@ export const LoginModal: React.FC<LoginModalProps> = ({ onLogin }) => {
 
           {isRegisterMode && (
             <div>
-              <label className="block text-xs font-bold text-indigo-900 uppercase tracking-wider mb-1.5">
+              <label htmlFor="teacher-class" className="block text-xs font-bold text-indigo-900 uppercase tracking-wider mb-1.5">
                 Class Name
               </label>
               <div className="relative">
                 <School className="absolute left-3.5 top-3.5 w-5 h-5 text-indigo-400" />
                 <input
+                  id="teacher-class"
+                  name="className"
                   type="text"
                   required
+                  autoComplete="organization"
                   value={className}
                   onChange={(e) => setClassName(e.target.value)}
                   placeholder="e.g. Samuel Class"
