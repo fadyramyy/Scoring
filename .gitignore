@@ -1,0 +1,25 @@
+# Logs
+logs
+*.log
+npm-debug.log*
+
+# Node modules
+node_modules/
+
+# Production build output
+dist/
+
+# Local environment variables
+.env
+.env.local
+.env.*.local
+!.env.example
+
+# Vercel
+.vercel
+
+# IDE & OS
+.DS_Store
+Thumbs.db
+.vscode/
+.idea/
