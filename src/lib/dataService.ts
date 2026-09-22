@@ -94,6 +94,17 @@ export const dataService = {
       throw new Error(authError?.message || 'Registration failed');
     }
 
+    // Ensure session active on client
+    if (!authData.session) {
+      const { error: signInErr } = await supabase.auth.signInWithPassword({
+        email: email.trim(),
+        password,
+      });
+      if (signInErr) {
+        console.warn('Auto sign-in warning:', signInErr.message);
+      }
+    }
+
     const userId = authData.user.id;
 
     // 2. Ensure profile exists or insert
@@ -111,7 +122,10 @@ export const dataService = {
     };
 
     if (!profile) {
-      await supabase.from('profiles').upsert(userProfile);
+      const { error: profError } = await supabase.from('profiles').upsert(userProfile);
+      if (profError) {
+        console.error('Profile upsert error:', profError);
+      }
     }
 
     // 3. Create or find Class
@@ -132,16 +146,22 @@ export const dataService = {
         .single();
 
       if (classError || !newClass) {
+        console.error('Class insert error:', classError);
         throw new Error(classError?.message || 'Failed to create class');
       }
       targetClassId = newClass.id;
     }
 
     // 4. Link teacher membership
-    await supabase.from('teacher_class_memberships').upsert({
+    const { error: memError } = await supabase.from('teacher_class_memberships').upsert({
       teacher_id: userId,
       class_id: targetClassId,
     });
+
+    if (memError) {
+      console.error('Membership insert error:', memError);
+      throw new Error(memError.message || 'Failed to assign class to teacher');
+    }
 
     return userProfile;
   },

@@ -102,6 +102,10 @@ ON public.profiles FOR SELECT USING (
   )
 );
 
+DROP POLICY IF EXISTS "Users can insert own profile" ON public.profiles;
+CREATE POLICY "Users can insert own profile"
+ON public.profiles FOR INSERT WITH CHECK (id = auth.uid());
+
 DROP POLICY IF EXISTS "Users can update own profile" ON public.profiles;
 CREATE POLICY "Users can update own profile"
 ON public.profiles FOR UPDATE USING (id = auth.uid());
@@ -111,12 +115,24 @@ DROP POLICY IF EXISTS "Teachers can view assigned classes" ON public.classes;
 CREATE POLICY "Teachers can view assigned classes"
 ON public.classes FOR SELECT USING (public.has_class_access(id));
 
+DROP POLICY IF EXISTS "Authenticated users can create classes" ON public.classes;
+CREATE POLICY "Authenticated users can create classes"
+ON public.classes FOR INSERT WITH CHECK (auth.uid() IS NOT NULL);
+
+DROP POLICY IF EXISTS "Teachers can update assigned classes" ON public.classes;
+CREATE POLICY "Teachers can update assigned classes"
+ON public.classes FOR UPDATE USING (public.has_class_access(id));
+
 -- TEACHER CLASS MEMBERSHIPS
 DROP POLICY IF EXISTS "Teachers can view memberships for assigned classes" ON public.teacher_class_memberships;
 CREATE POLICY "Teachers can view memberships for assigned classes"
 ON public.teacher_class_memberships FOR SELECT USING (
   public.has_class_access(class_id) OR teacher_id = auth.uid()
 );
+
+DROP POLICY IF EXISTS "Teachers can insert own memberships" ON public.teacher_class_memberships;
+CREATE POLICY "Teachers can insert own memberships"
+ON public.teacher_class_memberships FOR INSERT WITH CHECK (teacher_id = auth.uid());
 
 -- STUDENTS
 DROP POLICY IF EXISTS "Teachers can view students in assigned classes" ON public.students;
