@@ -345,9 +345,9 @@ export const dataService = {
     return data as Student[];
   },
 
-  async createStudent(classId: string, name: string): Promise<Student> {
+  async createStudent(classId: string, name: string, avatarUrl?: string | null): Promise<Student> {
     if (isDemoMode) {
-      return mockDb.createStudent(classId, name);
+      return mockDb.createStudent(classId, name, avatarUrl);
     }
     if (!supabase) throw new Error('Supabase client not initialized');
 
@@ -356,6 +356,7 @@ export const dataService = {
       .insert({
         class_id: classId,
         name: name.trim(),
+        avatar_url: avatarUrl || null,
         active: true,
       })
       .select()
@@ -365,17 +366,26 @@ export const dataService = {
     return data as Student;
   },
 
-  async updateStudentName(studentId: string, newName: string): Promise<void> {
+  async updateStudent(studentId: string, newName: string, avatarUrl?: string | null): Promise<void> {
     if (isDemoMode) {
-      mockDb.updateStudentName(studentId, newName);
+      mockDb.updateStudent(studentId, newName, avatarUrl);
       return;
     }
     if (!supabase) return;
 
+    const payload: any = { name: newName.trim() };
+    if (avatarUrl !== undefined) {
+      payload.avatar_url = avatarUrl;
+    }
+
     await supabase
       .from('students')
-      .update({ name: newName.trim() })
+      .update(payload)
       .eq('id', studentId);
+  },
+
+  async updateStudentName(studentId: string, newName: string): Promise<void> {
+    return this.updateStudent(studentId, newName);
   },
 
   async toggleStudentActive(studentId: string, currentActive: boolean): Promise<void> {

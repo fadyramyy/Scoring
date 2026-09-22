@@ -151,11 +151,12 @@ class MockDatabase {
     );
   }
 
-  public createStudent(classId: string, name: string): Student {
+  public createStudent(classId: string, name: string, avatarUrl?: string | null): Student {
     const newStudent: Student = {
       id: 'stu-' + Math.random().toString(36).substring(2, 9),
       class_id: classId,
       name: name.trim(),
+      avatar_url: avatarUrl || null,
       active: true,
       created_at: new Date().toISOString(),
     };
@@ -164,11 +165,17 @@ class MockDatabase {
     return newStudent;
   }
 
-  public updateStudentName(studentId: string, newName: string) {
+  public updateStudent(studentId: string, newName: string, avatarUrl?: string | null) {
     const students = this.store.students.map((s) =>
-      s.id === studentId ? { ...s, name: newName.trim() } : s
+      s.id === studentId
+        ? { ...s, name: newName.trim(), avatar_url: avatarUrl !== undefined ? avatarUrl : s.avatar_url }
+        : s
     );
     this.saveStore({ ...this.store, students });
+  }
+
+  public updateStudentName(studentId: string, newName: string) {
+    this.updateStudent(studentId, newName);
   }
 
   public toggleStudentActive(studentId: string) {
@@ -383,10 +390,9 @@ class MockDatabase {
    * Display Score Computation: Math.max(0, SUM(points))
    */
   public getStudentSessionScore(sessionId: string, studentId: string): number {
-    const rawSum = this.store.scoreEvents
+    return this.store.scoreEvents
       .filter((se) => se.session_id === sessionId && se.student_id === studentId)
       .reduce((sum, se) => sum + se.points, 0);
-    return Math.max(0, rawSum);
   }
 
   // --- Statistics & Dashboard Queries ---

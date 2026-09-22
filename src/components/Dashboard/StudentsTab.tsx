@@ -1,8 +1,8 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { Class, Student } from '../../types';
 import { dataService } from '../../lib/dataService';
 import { ImportExcelModal } from './ImportExcelModal';
-import { UserPlus, Edit2, Check, X, FileSpreadsheet } from 'lucide-react';
+import { UserPlus, Edit2, Check, X, FileSpreadsheet, Camera, User } from 'lucide-react';
 
 interface StudentsTabProps {
   currentClass: Class;
@@ -17,13 +17,59 @@ interface StudentWithStats {
   avgPointsPerClass: number;
 }
 
+const compressImage = (file: File): Promise<string> => {
+  return new Promise((resolve, reject) => {
+    const reader = new FileReader();
+    reader.onload = (e) => {
+      const img = new Image();
+      img.onload = () => {
+        const canvas = document.createElement('canvas');
+        const MAX_SIZE = 200;
+        let width = img.width;
+        let height = img.height;
+
+        if (width > height) {
+          if (width > MAX_SIZE) {
+            height *= MAX_SIZE / width;
+            width = MAX_SIZE;
+          }
+        } else {
+          if (height > MAX_SIZE) {
+            width *= MAX_SIZE / height;
+            height = MAX_SIZE;
+          }
+        }
+
+        canvas.width = width;
+        canvas.height = height;
+        const ctx = canvas.getContext('2d');
+        if (ctx) {
+          ctx.drawImage(img, 0, 0, width, height);
+          resolve(canvas.toDataURL('image/jpeg', 0.8));
+        } else {
+          resolve(e.target?.result as string);
+        }
+      };
+      img.onerror = reject;
+      img.src = e.target?.result as string;
+    };
+    reader.onerror = reject;
+    reader.readAsDataURL(file);
+  });
+};
+
 export const StudentsTab: React.FC<StudentsTabProps> = ({ currentClass }) => {
   const [studentRows, setStudentRows] = useState<StudentWithStats[]>([]);
   const [newStudentName, setNewStudentName] = useState('');
+  const [newStudentAvatar, setNewStudentAvatar] = useState<string | null>(null);
   const [editingId, setEditingId] = useState<string | null>(null);
   const [editName, setEditName] = useState('');
+  const [editAvatar, setEditAvatar] = useState<string | null>(null);
   const [showImportModal, setShowImportModal] = useState(false);
   const [loading, setLoading] = useState(false);
+
+  const fileInputRef = useRef<HTMLInputElement>(null);
+  const editFileInputRef = useRef<HTMLInputElement>(null);
 
   const refreshStudents = async () => {
     setLoading(true);
@@ -79,9 +125,26 @@ export const StudentsTab: React.FC<StudentsTabProps> = ({ currentClass }) => {
   const handleAddStudent = async (e: React.FormEvent) => {
     e.preventDefault();
     if (newStudentName.trim()) {
-      await dataService.createStudent(currentClass.id, newStudentName.trim());
+      await dataService.createStudent(currentClass.id, newStudentName.trim(), newStudentAvatar);
       setNewStudentName('');
+      setNewStudentAvatar(null);
       await refreshStudents();
+    }
+  };
+
+  const handleAvatarFileChange = async (e: React.ChangeEvent<HTMLInputElement>, isEdit = false) => {
+    const file = e.target.files?.[0];
+    if (file) {
+      try {
+        const compressed = await compressImage(file);
+        if (isEdit) {
+          setEditAvatar(compressed);
+        } else {
+          setNewStudentAvatar(compressed);
+        }
+      } catch (err) {
+        console.error('Image compression failed', err);
+      }
     }
   };
 
@@ -95,11 +158,12 @@ export const StudentsTab: React.FC<StudentsTabProps> = ({ currentClass }) => {
   const handleStartEdit = (student: Student) => {
     setEditingId(student.id);
     setEditName(student.name);
+    setEditAvatar(student.avatar_url || null);
   };
 
   const handleSaveEdit = async (studentId: string) => {
     if (editName.trim()) {
-      await dataService.updateStudentName(studentId, editName.trim());
+      await dataService.updateStudent(studentId, editName.trim(), editAvatar);
       setEditingId(null);
       await refreshStudents();
     }
@@ -114,13 +178,34 @@ export const StudentsTab: React.FC<StudentsTabProps> = ({ currentClass }) => {
     <div className="space-y-6">
       {/* ADD STUDENT & EXCEL IMPORT ACTION BAR */}
       <div className="bg-white border-2 border-indigo-100 rounded-3xl p-6 card-shadow flex flex-col md:flex-row items-stretch md:items-center justify-between gap-4">
-        <form onSubmit={handleAddStudent} className="flex-1 flex gap-3">
+        <form onSubmit={handleAddStudent} className="flex-1 flex items-center gap-3">
+          <input
+            type="file"
+            ref={fileInputRef}
+            accept="image/*"
+            onChange={(e) => handleAvatarFileChange(e, false)}
+            className="hidden"
+          />
+
+          <button
+            type="button"
+            onClick={() => fileInputRef.current?.click()}
+            className="w-12 h-12 rounded-2xl bg-[#F6F2FF] border-2 border-indigo-100 flex items-center justify-center text-indigo-500 hover:text-indigo-900 transition-colors shrink-0 overflow-hidden cursor-pointer"
+            title="Upload Student Photo"
+          >
+            {newStudentAvatar ? (
+              <img src={newStudentAvatar} alt="Preview" className="w-full h-full object-cover" />
+            ) : (
+              <Camera className="w-5 h-5" />
+            )}
+          </button>
+
           <input
             type="text"
             required
             value={newStudentName}
             onChange={(e) => setNewStudentName(e.target.value)}
-            placeholder="Single Student Name (e.g. Jason)"
+            placeholder="Student Name (e.g. Jason)"
             className="flex-1 px-4 py-3 bg-[#F6F2FF] border-2 border-indigo-100 rounded-2xl text-indigo-950 placeholder-indigo-300 font-semibold focus:outline-none focus:border-indigo-500 text-sm"
           />
           <button
@@ -150,6 +235,7 @@ export const StudentsTab: React.FC<StudentsTabProps> = ({ currentClass }) => {
           <table className="w-full text-left text-sm text-indigo-950">
             <thead className="bg-[#F6F2FF] text-xs uppercase font-extrabold text-indigo-600 border-b-2 border-indigo-100">
               <tr>
+                <th className="py-3.5 px-4">Photo</th>
                 <th className="py-3.5 px-4">Student Name</th>
                 <th className="py-3.5 px-4">Status</th>
                 <th className="py-3.5 px-4">Classes Attended</th>
@@ -165,6 +251,41 @@ export const StudentsTab: React.FC<StudentsTabProps> = ({ currentClass }) => {
 
                 return (
                   <tr key={student.id} className="hover:bg-indigo-50/40 transition-colors">
+                    <td className="py-3.5 px-4">
+                      {isEditing ? (
+                        <div className="relative">
+                          <input
+                            type="file"
+                            ref={editFileInputRef}
+                            accept="image/*"
+                            onChange={(e) => handleAvatarFileChange(e, true)}
+                            className="hidden"
+                          />
+                          <button
+                            type="button"
+                            onClick={() => editFileInputRef.current?.click()}
+                            className="w-10 h-10 rounded-full bg-indigo-100 border-2 border-amber-400 flex items-center justify-center overflow-hidden cursor-pointer"
+                          >
+                            {editAvatar ? (
+                              <img src={editAvatar} alt="Edit avatar" className="w-full h-full object-cover" />
+                            ) : (
+                              <Camera className="w-4 h-4 text-indigo-600" />
+                            )}
+                          </button>
+                        </div>
+                      ) : student.avatar_url ? (
+                        <img
+                          src={student.avatar_url}
+                          alt={student.name}
+                          className="w-10 h-10 rounded-full object-cover border-2 border-indigo-100 shadow-sm"
+                        />
+                      ) : (
+                        <div className="w-10 h-10 rounded-full bg-indigo-100 border border-indigo-200 flex items-center justify-center text-indigo-700 font-extrabold text-xs">
+                          {student.name.charAt(0).toUpperCase()}
+                        </div>
+                      )}
+                    </td>
+
                     <td className="py-3.5 px-4 font-extrabold text-indigo-950">
                       {isEditing ? (
                         <div className="flex items-center gap-2">
@@ -176,13 +297,13 @@ export const StudentsTab: React.FC<StudentsTabProps> = ({ currentClass }) => {
                           />
                           <button
                             onClick={() => handleSaveEdit(student.id)}
-                            className="p-1.5 bg-emerald-500 text-white rounded-lg hover:bg-emerald-600"
+                            className="p-1.5 bg-emerald-500 text-white rounded-lg hover:bg-emerald-600 cursor-pointer"
                           >
                             <Check className="w-4 h-4" />
                           </button>
                           <button
                             onClick={() => setEditingId(null)}
-                            className="p-1.5 bg-slate-200 text-slate-600 rounded-lg hover:bg-slate-300"
+                            className="p-1.5 bg-slate-200 text-slate-600 rounded-lg hover:bg-slate-300 cursor-pointer"
                           >
                             <X className="w-4 h-4" />
                           </button>

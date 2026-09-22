@@ -30,9 +30,12 @@ CREATE TABLE IF NOT EXISTS public.students (
   id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
   class_id UUID REFERENCES public.classes(id) ON DELETE CASCADE NOT NULL,
   name TEXT NOT NULL,
+  avatar_url TEXT,
   active BOOLEAN DEFAULT true NOT NULL,
   created_at TIMESTAMPTZ DEFAULT now() NOT NULL
 );
+
+ALTER TABLE public.students ADD COLUMN IF NOT EXISTS avatar_url TEXT;
 
 -- 5. Class Sessions Table
 CREATE TABLE IF NOT EXISTS public.class_sessions (

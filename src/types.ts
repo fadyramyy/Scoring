@@ -24,6 +24,7 @@ export interface Student {
   id: string;
   class_id: string;
   name: string;
+  avatar_url?: string | null;
   active: boolean;
   created_at: string;
 }
