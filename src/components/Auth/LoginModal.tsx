@@ -55,7 +55,7 @@ export const LoginModal: React.FC<LoginModalProps> = ({ onLogin }) => {
             <CosmicRocketEmblem className="w-14 h-14" />
           </div>
           <h1 className="text-2xl sm:text-3xl font-extrabold text-indigo-950 tracking-tight">
-            Cosmic Adventure
+            Light Quest
           </h1>
           <p className="text-xs sm:text-sm font-semibold text-indigo-600 uppercase tracking-widest mt-1">
             Classroom Scoring & Rewards

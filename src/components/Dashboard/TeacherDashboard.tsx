@@ -4,7 +4,6 @@ import { OverviewTab } from './OverviewTab';
 import { StudentsTab } from './StudentsTab';
 import { AttendanceTab } from './AttendanceTab';
 import { ScoreHistoryTab } from './ScoreHistoryTab';
-import { TeacherAstronautAvatar } from '../Brand/CosmicEmblem';
 import { LayoutDashboard, Users, CalendarCheck, Award, Play } from 'lucide-react';
 
 interface TeacherDashboardProps {
@@ -28,18 +27,15 @@ export const TeacherDashboard: React.FC<TeacherDashboardProps> = ({
 
   return (
     <div className="space-y-6">
-      {/* ACTION BANNER WITH TEACHER ASTRONAUT AVATAR */}
+      {/* ACTION BANNER */}
       <div className="bg-gradient-to-r from-indigo-600 via-indigo-700 to-indigo-800 rounded-3xl p-6 sm:p-8 text-white shadow-xl shadow-indigo-500/15 flex flex-col sm:flex-row sm:items-center justify-between gap-6 relative overflow-hidden">
-        <div className="flex items-center gap-4 relative z-10">
-          <TeacherAstronautAvatar className="w-16 h-16 sm:w-20 sm:h-20 shrink-0" />
-          <div>
-            <h2 className="text-2xl sm:text-3xl font-extrabold tracking-tight font-display">
-              {currentClass.name} Dashboard
-            </h2>
-            <p className="text-xs sm:text-sm font-medium text-indigo-200 mt-1">
-              Teacher: <strong className="text-white">{teacher.name}</strong> ({teacher.email})
-            </p>
-          </div>
+        <div className="relative z-10">
+          <h2 className="text-2xl sm:text-3xl font-extrabold tracking-tight font-display">
+            {currentClass.name} Dashboard
+          </h2>
+          <p className="text-xs sm:text-sm font-medium text-indigo-200 mt-1">
+            Teacher: <strong className="text-white">{teacher.name}</strong> ({teacher.email})
+          </p>
         </div>
 
         {hasActiveSession ? (

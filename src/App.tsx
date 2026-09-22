@@ -134,7 +134,7 @@ export const App: React.FC = () => {
           <div className="flex items-center gap-2.5">
             <CosmicRocketEmblem className="w-9 h-9" />
             <span className="font-extrabold text-indigo-950 text-xl font-display hidden sm:inline tracking-tight">
-              Cosmic Adventure
+              Light Quest
             </span>
           </div>
 
