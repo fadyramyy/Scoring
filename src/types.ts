@@ -75,3 +75,9 @@ export interface ScoreAnimationBubble {
   points: number;
   label: string;
 }
+
+export interface RewardPrize {
+  id: string;
+  name: string;
+  color: string;
+}

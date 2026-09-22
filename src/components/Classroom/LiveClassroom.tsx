@@ -22,11 +22,13 @@ import {
   Sliders,
   Star,
   Search,
+  Trophy,
 } from 'lucide-react';
 import confetti from 'canvas-confetti';
 import { ScoreAnimationOverlay } from './ScoreAnimation';
 import { AddLateStudentModal } from './AddLateStudentModal';
 import { CustomScoreModal } from './CustomScoreModal';
+import { RewardWheelModal } from './RewardWheelModal';
 
 interface LiveClassroomProps {
   currentClass: Class;
@@ -46,6 +48,7 @@ export const LiveClassroom: React.FC<LiveClassroomProps> = ({
   const [scoreEvents, setScoreEvents] = useState<ScoreEvent[]>([]);
   const [isFullscreen, setIsFullscreen] = useState<boolean>(false);
   const [showAddLateModal, setShowAddLateModal] = useState<boolean>(false);
+  const [showWheelModal, setShowWheelModal] = useState<boolean>(false);
   const [customScoreStudent, setCustomScoreStudent] = useState<Student | null>(null);
   const [bubbles, setBubbles] = useState<ScoreAnimationBubble[]>([]);
   const [searchQuery, setSearchQuery] = useState<string>('');
@@ -288,6 +291,15 @@ export const LiveClassroom: React.FC<LiveClassroomProps> = ({
 
           <button
             type="button"
+            onClick={() => setShowWheelModal(true)}
+            className="px-4 py-2.5 bg-amber-400 hover:bg-amber-300 text-indigo-950 font-extrabold rounded-2xl text-xs sm:text-sm flex items-center gap-1.5 transition-all shadow-md shadow-amber-400/30 tactile-btn cursor-pointer"
+          >
+            <Trophy className="w-4 h-4 text-indigo-950" />
+            <span>REWARD WHEEL 🎡</span>
+          </button>
+
+          <button
+            type="button"
             onClick={() => setShowAddLateModal(true)}
             className="px-4 py-2.5 bg-indigo-600 hover:bg-indigo-700 text-white font-extrabold rounded-2xl text-xs sm:text-sm flex items-center gap-1.5 transition-all shadow-md shadow-indigo-500/20 tactile-btn cursor-pointer"
           >
@@ -484,6 +496,14 @@ export const LiveClassroom: React.FC<LiveClassroomProps> = ({
             setCustomScoreStudent(null);
           }}
           onClose={() => setCustomScoreStudent(null)}
+        />
+      )}
+
+      {showWheelModal && (
+        <RewardWheelModal
+          classId={currentClass.id}
+          className={currentClass.name}
+          onClose={() => setShowWheelModal(false)}
         />
       )}
     </div>
