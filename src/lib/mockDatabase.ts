@@ -18,10 +18,10 @@ const INITIAL_CLASSES: Class[] = [
 ];
 
 const INITIAL_PROFILES: Profile[] = [
-  { id: 'teacher-1', email: 'mr.a@samuel.church', name: 'Mr. Andrew', created_at: '2026-01-01T00:00:00Z' },
-  { id: 'teacher-2', email: 'mr.b@samuel.church', name: 'Mr. Benjamin', created_at: '2026-01-01T00:00:00Z' },
-  { id: 'teacher-3', email: 'mr.c@elijah.church', name: 'Mr. Caleb', created_at: '2026-01-01T00:00:00Z' },
-  { id: 'teacher-4', email: 'mr.d@elijah.church', name: 'Mr. David', created_at: '2026-01-01T00:00:00Z' },
+  { id: 'teacher-1', email: 'mr.a@samuel.church', name: 'Mr. Andrew', password: 'password123', created_at: '2026-01-01T00:00:00Z' },
+  { id: 'teacher-2', email: 'mr.b@samuel.church', name: 'Mr. Benjamin', password: 'password123', created_at: '2026-01-01T00:00:00Z' },
+  { id: 'teacher-3', email: 'mr.c@elijah.church', name: 'Mr. Caleb', password: 'password123', created_at: '2026-01-01T00:00:00Z' },
+  { id: 'teacher-4', email: 'mr.d@elijah.church', name: 'Mr. David', password: 'password123', created_at: '2026-01-01T00:00:00Z' },
 ];
 
 const INITIAL_MEMBERSHIPS: TeacherClassMembership[] = [

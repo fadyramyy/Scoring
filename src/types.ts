@@ -2,6 +2,7 @@ export interface Profile {
   id: string;
   email: string;
   name: string;
+  password?: string;
   created_at: string;
 }
 
